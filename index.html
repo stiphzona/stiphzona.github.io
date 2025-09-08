@@ -24,7 +24,7 @@
         
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1000px;
             background-color: white;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -176,7 +176,8 @@
             padding: 15px;
             background-color: white;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            width: 280px;
+            width: 220px;
+            min-height: 120px;
             display: inline-block;
             margin-bottom: 20px;
             transition: all 0.3s ease;
@@ -194,25 +195,21 @@
             font-size: 1.1rem;
             border-bottom: 1px solid #eee;
             padding-bottom: 8px;
-            text-align: center;
         }
         
         .names-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
             min-height: 40px;
         }
         
         .name-item {
             display: flex;
+            justify-content: space-between;
             align-items: center;
             background-color: #f8f9fa;
             padding: 6px 10px;
+            margin-bottom: 6px;
             border-radius: 4px;
             border-left: 3px solid #3498db;
-            white-space: nowrap;
         }
         
         .name-text {
@@ -222,9 +219,6 @@
             padding: 4px;
             border-radius: 3px;
             transition: background-color 0.2s;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 150px;
         }
         
         .name-text:hover {
@@ -237,7 +231,6 @@
             padding: 4px;
             border-radius: 3px;
             transition: background-color 0.2s;
-            margin-left: 5px;
         }
         
         .remove-name:hover {
@@ -306,17 +299,7 @@
             }
             
             .node {
-                width: 250px;
-            }
-            
-            .names-container {
-                justify-content: flex-start;
-                overflow-x: auto;
-                padding-bottom: 5px;
-            }
-            
-            .name-item {
-                flex: 0 0 auto;
+                width: 200px;
             }
         }
     </style>
@@ -352,7 +335,6 @@
                 <li>Click on any name to edit it</li>
                 <li>Click the <i class="fas fa-plus-circle"></i> button to add a new name to a position</li>
                 <li>Click the <i class="fas fa-times"></i> icon to remove a name</li>
-                <li>Names are displayed horizontally for easy viewing</li>
                 <li>Use the buttons at the top to expand or collapse all sections</li>
                 <li>Click "Save Changes" to save your edits to browser storage</li>
                 <li>Your data will automatically load when you return</li>
@@ -367,27 +349,27 @@
         const hierarchyData = [
             {
                 position: "Chief Magistrate",
-                names: ["Dr. Sarah Johnson", "Prof. Alan Smith"],
+                names: ["Dr. Sarah Johnson"],
                 children: [
                     {
                         position: "Deputy Chief Magistrate",
-                        names: ["Michael Chen", "Robert Williams", "Emma Thompson"],
+                        names: ["Michael Chen", "Robert Williams"],
                         children: [
                             {
                                 position: "Regional Magistrate",
-                                names: ["Elizabeth Martinez", "James Wilson", "Sophia Brown", "William Taylor"],
+                                names: ["Elizabeth Martinez", "James Wilson"],
                                 children: [
                                     {
                                         position: "Provincial Magistrate",
-                                        names: ["Patricia Brown", "David Wilson", "Maria Garcia"],
+                                        names: ["Patricia Brown"],
                                         children: [
                                             {
                                                 position: "Senior Magistrate",
-                                                names: ["Thomas Anderson", "Jennifer Lopez", "Christopher Lee", "Amanda Johnson"],
+                                                names: ["Thomas Anderson", "Jennifer Lopez"],
                                                 children: [
                                                     {
                                                         position: "Magistrate",
-                                                        names: ["David Miller", "Susan Taylor", "Christopher Lee", "Jessica Brown", "Daniel Kim", "Olivia Martinez"],
+                                                        names: ["David Miller", "Susan Taylor", "Christopher Lee"],
                                                         children: []
                                                     }
                                                 ]
@@ -497,6 +479,7 @@
             // Expand all button
             document.getElementById('expandAll').addEventListener('click', function() {
                 // For tree view, we don't have collapse/expand in the same way
+                // This would need more complex implementation for a tree
                 showNotification('All levels are already visible in tree view');
             });
             
