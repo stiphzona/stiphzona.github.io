@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magistrate Hierarchy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -13,165 +14,362 @@
         }
         
         body {
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
         }
         
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 1000px;
             background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #2c3e50 0%, #4a6491 100%);
+            color: white;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
         
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
         }
         
-        .hierarchy {
-            margin-top: 20px;
-        }
-        
-        .node {
-            margin: 10px 0;
-        }
-        
-        .node-header {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-        
-        .node-header:hover {
-            background-color: #e0e0e0;
-        }
-        
-        .toggle {
-            margin-right: 10px;
-            font-weight: bold;
-            user-select: none;
-        }
-        
-        .node-content {
-            margin-left: 30px;
-            border-left: 2px solid #ddd;
-            padding-left: 15px;
-            display: none;
-        }
-        
-        .node-content.expanded {
-            display: block;
-        }
-        
-        .position {
-            font-weight: bold;
-            margin-right: 10px;
-            min-width: 200px;
-            display: inline-block;
-        }
-        
-        .name {
-            padding: 5px 10px;
-            border: 1px dashed transparent;
-            border-radius: 4px;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        
-        .name:hover {
-            background-color: #f9f9f9;
-            border-color: #ccc;
-        }
-        
-        .name:focus {
-            outline: none;
-            border: 1px solid #4a90e2;
-            background-color: #fff;
+        .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
         
         .controls {
-            text-align: center;
-            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         button {
-            padding: 8px 16px;
-            background-color: #4a90e2;
-            color: white;
+            padding: 10px 18px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
-            margin: 0 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         button:hover {
-            background-color: #357abD;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-expand {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-collapse {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-save {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-add {
+            background-color: #9b59b6;
+            color: white;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        
+        .hierarchy-container {
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        .tree {
+            display: flex;
+            justify-content: center;
+        }
+        
+        .tree ul {
+            padding-top: 20px;
+            position: relative;
+            transition: all 0.5s;
+            padding-left: 0;
+        }
+        
+        .tree li {
+            float: left;
+            text-align: center;
+            list-style-type: none;
+            position: relative;
+            padding: 20px 5px 0 5px;
+            transition: all 0.5s;
+        }
+        
+        .tree li::before, .tree li::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 50%;
+            border-top: 2px solid #ccc;
+            width: 50%;
+            height: 20px;
+        }
+        
+        .tree li::after {
+            right: auto;
+            left: 50%;
+            border-left: 2px solid #ccc;
+        }
+        
+        .tree li:only-child::before, .tree li:only-child::after {
+            display: none;
+        }
+        
+        .tree li:only-child {
+            padding-top: 0;
+        }
+        
+        .tree li:first-child::before, .tree li:last-child::after {
+            border: 0 none;
+        }
+        
+        .tree li:last-child::before {
+            border-right: 2px solid #ccc;
+            border-radius: 0 5px 0 0;
+        }
+        
+        .tree li:first-child::after {
+            border-radius: 5px 0 0 0;
+        }
+        
+        .tree ul ul::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            border-left: 2px solid #ccc;
+            width: 0;
+            height: 20px;
+        }
+        
+        .node {
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 220px;
+            min-height: 120px;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .position-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        
+        .names-container {
+            min-height: 40px;
+        }
+        
+        .name-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 6px 10px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .name-text {
+            flex-grow: 1;
+            text-align: left;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        
+        .name-text:hover {
+            background-color: #e9ecef;
+        }
+        
+        .remove-name {
+            color: #e74c3c;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        
+        .remove-name:hover {
+            background-color: #ffeaea;
+        }
+        
+        .add-name-btn {
+            margin-top: 10px;
+            width: 100%;
         }
         
         .instructions {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 30px;
+            padding: 20px;
             background-color: #f8f9fa;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            border-radius: 8px;
+            border-left: 5px solid #2ecc71;
+        }
+        
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+            line-height: 1.6;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2ecc71;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .tree {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .tree ul {
+                display: inline-block;
+                vertical-align: top;
+                min-width: 100%;
+            }
+            
+            .node {
+                width: 200px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Magistrate Hierarchy</h1>
+        <header>
+            <h1>Magistrate Hierarchy</h1>
+            <p class="description">View and manage organizational structure</p>
+        </header>
         
         <div class="controls">
-            <button id="expandAll">Expand All</button>
-            <button id="collapseAll">Collapse All</button>
-            <button id="saveBtn">Save Changes</button>
-            <button id="resetBtn">Reset to Default</button>
+            <button class="btn-expand" id="expandAll">
+                <i class="fas fa-expand"></i> Expand All
+            </button>
+            <button class="btn-collapse" id="collapseAll">
+                <i class="fas fa-compress"></i> Collapse All
+            </button>
+            <button class="btn-save" id="saveBtn">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
         </div>
         
-        <div class="hierarchy" id="hierarchy">
-            <!-- Hierarchy will be generated by JavaScript -->
+        <div class="hierarchy-container">
+            <div class="tree" id="hierarchy">
+                <!-- Tree will be generated by JavaScript -->
+            </div>
         </div>
         
         <div class="instructions">
-            <p><strong>Instructions:</strong> Click on any name to edit it. Click on the arrow icons to expand/collapse sections. 
-            Don't forget to save your changes when you're done!</p>
+            <h3>How to Use:</h3>
+            <ul>
+                <li>Click on any name to edit it</li>
+                <li>Click the <i class="fas fa-plus-circle"></i> button to add a new name to a position</li>
+                <li>Click the <i class="fas fa-times"></i> icon to remove a name</li>
+                <li>Use the buttons at the top to expand or collapse all sections</li>
+                <li>Click "Save Changes" to save your edits to browser storage</li>
+                <li>Your data will automatically load when you return</li>
+            </ul>
         </div>
     </div>
 
+    <div class="notification" id="notification"></div>
+
     <script>
-        // Hierarchy structure
+        // Hierarchy structure with support for multiple names
         const hierarchyData = [
             {
                 position: "Chief Magistrate",
-                names: [""],
+                names: ["Dr. Sarah Johnson"],
                 children: [
                     {
                         position: "Deputy Chief Magistrate",
-                        names: [""],
+                        names: ["Michael Chen", "Robert Williams"],
                         children: [
                             {
                                 position: "Regional Magistrate",
-                                names: [""],
+                                names: ["Elizabeth Martinez", "James Wilson"],
                                 children: [
                                     {
                                         position: "Provincial Magistrate",
-                                        names: [""],
+                                        names: ["Patricia Brown"],
                                         children: [
                                             {
                                                 position: "Senior Magistrate",
-                                                names: [""],
+                                                names: ["Thomas Anderson", "Jennifer Lopez"],
                                                 children: [
                                                     {
                                                         position: "Magistrate",
-                                                        names: [""],
+                                                        names: ["David Miller", "Susan Taylor", "Christopher Lee"],
                                                         children: []
                                                     }
                                                 ]
@@ -187,34 +385,51 @@
         ];
 
         // Generate the hierarchy HTML
-        function generateHierarchy(data, level = 0) {
+        function generateHierarchy(data) {
             let html = '';
             
-            data.forEach(item => {
-                const hasChildren = item.children && item.children.length > 0;
+            if (data.length > 0) {
+                html = '<ul>';
                 
-                html += `
-                    <div class="node" data-level="${level}">
-                        <div class="node-header">
-                            <span class="toggle">${hasChildren ? '▶' : ''}</span>
-                            <span class="position">${item.position}:</span>
-                `;
-                
-                // Generate name fields
-                item.names.forEach((name, index) => {
-                    html += `<span class="name" contenteditable="true" data-position="${item.position}" data-index="${index}">${name}</span>`;
+                data.forEach(item => {
+                    const hasChildren = item.children && item.children.length > 0;
+                    
+                    html += `
+                        <li>
+                            <div class="node">
+                                <div class="position-title">${item.position}</div>
+                                <div class="names-container">
+                    `;
+                    
+                    // Generate name items
+                    item.names.forEach((name, index) => {
+                        html += `
+                            <div class="name-item">
+                                <span class="name-text" contenteditable="true" data-position="${item.position}" data-index="${index}">${name}</span>
+                                <span class="remove-name" data-position="${item.position}" data-index="${index}">
+                                    <i class="fas fa-times"></i>
+                                </span>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                                </div>
+                                <button class="btn-add add-name-btn" data-position="${item.position}">
+                                    <i class="fas fa-plus-circle"></i> Add Name
+                                </button>
+                            </div>
+                    `;
+                    
+                    if (hasChildren) {
+                        html += generateHierarchy(item.children);
+                    }
+                    
+                    html += '</li>';
                 });
                 
-                html += `</div>`;
-                
-                if (hasChildren) {
-                    html += `<div class="node-content">`;
-                    html += generateHierarchy(item.children, level + 1);
-                    html += `</div>`;
-                }
-                
-                html += `</div>`;
-            });
+                html += '</ul>';
+            }
             
             return html;
         }
@@ -229,86 +444,109 @@
             
             hierarchyElement.innerHTML = generateHierarchy(dataToUse);
             
-            // Add event listeners to toggle buttons
-            document.querySelectorAll('.node-header').forEach(header => {
-                header.addEventListener('click', function(e) {
-                    // Don't toggle if clicking on editable name
-                    if (e.target.classList.contains('name')) return;
+            // Add event listeners to remove buttons
+            document.querySelectorAll('.remove-name').forEach(button => {
+                button.addEventListener('click', function() {
+                    const position = this.getAttribute('data-position');
+                    const index = parseInt(this.getAttribute('data-index'));
                     
-                    const toggle = this.querySelector('.toggle');
-                    const content = this.nextElementSibling;
+                    removeNameFromHierarchy(dataToUse, position, index);
+                    initHierarchy(); // Re-render
+                });
+            });
+            
+            // Add event listeners to add buttons
+            document.querySelectorAll('.add-name-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const position = this.getAttribute('data-position');
                     
-                    if (content && content.classList.contains('node-content')) {
-                        content.classList.toggle('expanded');
-                        toggle.textContent = content.classList.contains('expanded') ? '▼' : '▶';
-                    }
+                    addNameToHierarchy(dataToUse, position, "New Person");
+                    initHierarchy(); // Re-render
+                });
+            });
+            
+            // Make name fields editable
+            document.querySelectorAll('.name-text').forEach(element => {
+                element.addEventListener('blur', function() {
+                    const position = this.getAttribute('data-position');
+                    const index = parseInt(this.getAttribute('data-index'));
+                    const newName = this.textContent;
+                    
+                    updateNameInHierarchy(dataToUse, position, index, newName);
                 });
             });
             
             // Expand all button
             document.getElementById('expandAll').addEventListener('click', function() {
-                document.querySelectorAll('.node-content').forEach(content => {
-                    content.classList.add('expanded');
-                });
-                document.querySelectorAll('.toggle').forEach(toggle => {
-                    toggle.textContent = '▼';
-                });
+                // For tree view, we don't have collapse/expand in the same way
+                // This would need more complex implementation for a tree
+                showNotification('All levels are already visible in tree view');
             });
             
             // Collapse all button
             document.getElementById('collapseAll').addEventListener('click', function() {
-                document.querySelectorAll('.node-content').forEach(content => {
-                    content.classList.remove('expanded');
-                });
-                document.querySelectorAll('.toggle').forEach(toggle => {
-                    toggle.textContent = '▶';
-                });
+                // For tree view, we don't have collapse/expand in the same way
+                showNotification('Tree view shows all levels by design');
             });
             
             // Save button
             document.getElementById('saveBtn').addEventListener('click', function() {
-                // Collect all the data
-                const names = {};
-                document.querySelectorAll('.name').forEach(element => {
-                    const position = element.getAttribute('data-position');
-                    const index = parseInt(element.getAttribute('data-index'));
-                    
-                    if (!names[position]) names[position] = [];
-                    names[position][index] = element.textContent;
-                });
-                
-                // Update the data structure
-                updateHierarchyData(dataToUse, names);
-                
                 // Save to localStorage
                 localStorage.setItem('magistrateHierarchy', JSON.stringify(dataToUse));
                 
-                alert('Changes saved successfully!');
+                // Show confirmation
+                showNotification('Changes saved successfully!');
             });
-            
-            // Reset button
-            document.getElementById('resetBtn').addEventListener('click', function() {
-                if (confirm('Are you sure you want to reset all names? This cannot be undone.')) {
-                    localStorage.removeItem('magistrateHierarchy');
-                    initHierarchy();
-                }
-            });
-            
-            // Expand first level by default
-            document.querySelectorAll('.node-header')[0].click();
         }
         
-        // Update hierarchy data with new names
-        function updateHierarchyData(data, names) {
+        // Update name in hierarchy data
+        function updateNameInHierarchy(data, position, index, newName) {
             data.forEach(item => {
-                if (names[item.position]) {
-                    item.names = names[item.position];
+                if (item.position === position) {
+                    item.names[index] = newName;
                 }
                 
                 if (item.children && item.children.length > 0) {
-                    updateHierarchyData(item.children, names);
+                    updateNameInHierarchy(item.children, position, index, newName);
                 }
             });
+        }
+        
+        // Add name to hierarchy data
+        function addNameToHierarchy(data, position, newName) {
+            data.forEach(item => {
+                if (item.position === position) {
+                    item.names.push(newName);
+                }
+                
+                if (item.children && item.children.length > 0) {
+                    addNameToHierarchy(item.children, position, newName);
+                }
+            });
+        }
+        
+        // Remove name from hierarchy data
+        function removeNameFromHierarchy(data, position, index) {
+            data.forEach(item => {
+                if (item.position === position && item.names.length > 1) {
+                    item.names.splice(index, 1);
+                }
+                
+                if (item.children && item.children.length > 0) {
+                    removeNameFromHierarchy(item.children, position, index);
+                }
+            });
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
         
         // Initialize when page loads
