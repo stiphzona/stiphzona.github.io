@@ -3,38 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizational Hierarchy Viewer</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <title>Organization Hierarchy</title>
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            background-color: #f5f7fa;
             color: #333;
+            line-height: 1.6;
+            padding: 20px;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
+            padding: 20px;
         }
         
         header {
-            background: linear-gradient(90deg, #2c3e50 0%, #4a6491 100%);
-            color: white;
-            padding: 25px;
             text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #2c3e50, #1a2530);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         h1 {
@@ -44,7 +42,6 @@
         
         .description {
             font-size: 1.1rem;
-            opacity: 0.9;
             max-width: 800px;
             margin: 0 auto;
         }
@@ -52,270 +49,117 @@
         .controls {
             display: flex;
             justify-content: center;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-            flex-wrap: wrap;
+            margin-bottom: 30px;
             gap: 15px;
+            flex-wrap: wrap;
         }
         
-        button {
-            padding: 12px 20px;
+        .filter-btn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 500;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
         
-        button:hover {
+        .filter-btn:hover {
+            background-color: #2980b9;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        .btn-excel {
-            background-color: #27ae60;
-            color: white;
-        }
-        
-        .btn-expand {
-            background-color: #2ecc71;
-            color: white;
-        }
-        
-        .btn-collapse {
-            background-color: #e74c3c;
-            color: white;
-        }
-        
-        .file-input-container {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-        
-        .file-input {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
+        .filter-btn.active {
+            background-color: #2c3e50;
         }
         
         .hierarchy-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 30px;
+            margin-bottom: 30px;
             overflow-x: auto;
         }
         
-        .tree {
+        .org-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .level {
             display: flex;
             justify-content: center;
-        }
-        
-        .tree ul {
-            padding-top: 20px;
-            position: relative;
-            transition: all 0.5s;
-            padding-left: 0;
-        }
-        
-        .tree li {
-            float: left;
-            text-align: center;
-            list-style-type: none;
-            position: relative;
-            padding: 20px 5px 0 5px;
-            transition: all 0.5s;
-        }
-        
-        .tree li::before, .tree li::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 50%;
-            border-top: 2px solid #ccc;
-            width: 50%;
-            height: 20px;
-        }
-        
-        .tree li::after {
-            right: auto;
-            left: 50%;
-            border-left: 2px solid #ccc;
-        }
-        
-        .tree li:only-child::before, .tree li:only-child::after {
-            display: none;
-        }
-        
-        .tree li:only-child {
-            padding-top: 0;
-        }
-        
-        .tree li:first-child::before, .tree li:last-child::after {
-            border: 0 none;
-        }
-        
-        .tree li:last-child::before {
-            border-right: 2px solid #ccc;
-            border-radius: 0 5px 0 0;
-        }
-        
-        .tree li:first-child::after {
-            border-radius: 5px 0 0 0;
-        }
-        
-        .tree ul ul::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            border-left: 2px solid #ccc;
-            width: 0;
-            height: 20px;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 25px;
+            width: 100%;
         }
         
         .node {
-            border: 2px solid #3498db;
-            border-radius: 8px;
-            padding: 15px;
             background-color: white;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            width: 280px;
-            display: inline-block;
-            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            width: 220px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            position: relative;
         }
         
         .node:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
-        .position-title {
-            font-weight: bold;
+        .node::before {
+            content: '';
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 16px;
+            background-color: #ccc;
+        }
+        
+        .node h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
             color: #2c3e50;
-            margin-bottom: 12px;
-            font-size: 1.1rem;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 8px;
+        }
+        
+        .node p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .connector {
+            height: 25px;
+            width: 2px;
+            background-color: #ccc;
+            margin: 0 auto;
+        }
+        
+        .footer {
             text-align: center;
-        }
-        
-        .names-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            min-height: 40px;
-        }
-        
-        .name-item {
-            display: flex;
-            align-items: center;
-            background-color: #f8f9fa;
-            padding: 8px 12px;
-            border-radius: 4px;
-            border-left: 3px solid #3498db;
-            white-space: nowrap;
-        }
-        
-        .name-text {
-            flex-grow: 1;
-            text-align: left;
-            padding: 4px;
-            border-radius: 3px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 150px;
-        }
-        
-        .instructions {
             margin-top: 30px;
-            padding: 25px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            border-left: 5px solid #2ecc71;
-        }
-        
-        .instructions h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-        
-        .instructions ul {
-            margin-left: 20px;
-            line-height: 1.6;
-        }
-        
-        .instructions li {
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
-        
-        .instructions .highlight {
-            background-color: #fff3cd;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 500;
-        }
-        
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #2ecc71;
-            color: white;
-            padding: 15px 25px;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            font-weight: 500;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
-        
-        .notification.show {
-            opacity: 1;
-            transform: translateY(0);
+            color: #7f8c8d;
+            font-size: 0.9rem;
         }
         
         @media (max-width: 768px) {
-            .tree {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-            
-            .tree ul {
-                display: inline-block;
-                vertical-align: top;
-                min-width: 100%;
+            .level {
+                flex-direction: column;
+                align-items: center;
             }
             
             .node {
-                width: 250px;
-            }
-            
-            .names-container {
-                justify-content: flex-start;
-                overflow-x: auto;
-                padding-bottom: 5px;
-            }
-            
-            .name-item {
-                flex: 0 0 auto;
-            }
-            
-            h1 {
-                font-size: 2rem;
+                width: 90%;
+                max-width: 300px;
             }
         }
     </style>
@@ -323,246 +167,172 @@
 <body>
     <div class="container">
         <header>
-            <h1>Organizational Hierarchy Viewer</h1>
-            <p class="description">Upload an Excel file to visualize your organization's structure</p>
+            <h1>Judicial Hierarchy</h1>
+            <p class="description">This chart displays the organizational structure of the magistrate court system, showing reporting lines and positions within the judiciary.</p>
         </header>
         
         <div class="controls">
-            <button class="btn-excel">
-                <i class="fas fa-file-excel"></i> Import from Excel
-                <input type="file" id="excelFile" class="file-input" accept=".xlsx, .xls">
-            </button>
-            <button class="btn-expand" id="expandAll">
-                <i class="fas fa-expand"></i> Expand All
-            </button>
-            <button class="btn-collapse" id="collapseAll">
-                <i class="fas fa-compress"></i> Collapse All
-            </button>
+            <button class="filter-btn active" data-filter="all">All Positions</button>
+            <button class="filter-btn" data-filter="Chief Magistrate">Chief Magistrate</button>
+            <button class="filter-btn" data-filter="Deputy Chief Magistrate">Deputy Chief Magistrate</button>
+            <button class="filter-btn" data-filter="Regional Magistrate">Regional Magistrate</button>
         </div>
         
         <div class="hierarchy-container">
-            <div class="tree" id="hierarchy">
-                <div class="placeholder" style="text-align: center; padding: 40px; color: #666;">
-                    <i class="fas fa-file-excel" style="font-size: 4rem; color: #27ae60; margin-bottom: 20px;"></i>
-                    <h2>Upload an Excel File to Begin</h2>
-                    <p>Your data remains private and is processed entirely in your browser</p>
-                </div>
+            <div class="org-chart" id="orgChart">
+                <!-- Organization chart will be generated here -->
             </div>
         </div>
         
-        <div class="instructions">
-            <h3>How to Use This Tool:</h3>
-            <ul>
-                <li>Prepare an Excel file with columns for <span class="highlight">Level</span> and <span class="highlight">Name</span></li>
-                <li>Click "Import from Excel" to load your organizational data</li>
-                <li>Your Excel file is processed entirely in your browser - no data is sent to any server</li>
-                <li>Use the expand/collapse buttons to view different sections of the hierarchy</li>
-                <li>To use on GitHub Pages: simply upload this HTML file and your Excel file to your repository</li>
-                <li>Your data remains completely private - nothing is stored on GitHub servers</li>
-            </ul>
+        <div class="footer">
+            <p>© 2023 Judicial System Organization Chart | Data updated monthly</p>
         </div>
     </div>
 
-    <div class="notification" id="notification"></div>
-
     <script>
-        // Default hierarchy structure
-        const hierarchyStructure = [
-            {
-                position: "Chief Magistrate",
-                names: [],
-                children: [
-                    {
-                        position: "Deputy Chief Magistrate",
-                        names: [],
-                        children: [
-                            {
-                                position: "Regional Magistrate",
-                                names: [],
-                                children: [
-                                    {
-                                        position: "Provincial Magistrate",
-                                        names: [],
-                                        children: [
-                                            {
-                                                position: "Senior Magistrate",
-                                                names: [],
-                                                children: [
-                                                    {
-                                                        position: "Magistrate",
-                                                        names: [],
-                                                        children: []
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-        ];
+        // Sample CSV data (in a real scenario, this would be loaded from a separate file)
+        const csvData = `Name,Title,ReportsTo
+Sarah Johnson,Chief Magistrate,
+Michael Brown,Deputy Chief Magistrate,Chief Magistrate
+Emily Davis,Regional Magistrate,Deputy Chief Magistrate
+Robert Wilson,Regional Magistrate,Deputy Chief Magistrate
+Jennifer Lee,Provincial Magistrate,Regional Magistrate
+David Miller,Provincial Magistrate,Regional Magistrate
+Jessica Garcia,Senior Magistrate,Provincial Magistrate
+Christopher Martinez,Senior Magistrate,Provincial Magistrate
+Amanda Rodriguez,Resident Magistrate,Senior Magistrate
+Daniel Smith,Resident Magistrate,Senior Magistrate
+Matthew Taylor,Magistrate,Resident Magistrate
+Elizabeth Thomas,Magistrate,Resident Magistrate`;
 
-        // Generate the hierarchy HTML
-        function generateHierarchy(data) {
-            let html = '';
+        // Parse CSV data
+        function parseCSV(csv) {
+            const lines = csv.split('\n');
+            const result = [];
+            const headers = lines[0].split(',');
             
-            if (data.length > 0) {
-                html = '<ul>';
+            for (let i = 1; i < lines.length; i++) {
+                const obj = {};
+                const currentline = lines[i].split(',');
                 
-                data.forEach(item => {
-                    const hasChildren = item.children && item.children.length > 0;
-                    
-                    html += `
-                        <li>
-                            <div class="node">
-                                <div class="position-title">${item.position}</div>
-                                <div class="names-container">
-                    `;
-                    
-                    // Generate name items
-                    if (item.names && item.names.length > 0) {
-                        item.names.forEach((name) => {
-                            html += `
-                                <div class="name-item">
-                                    <span class="name-text">${name}</span>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        html += `<div style="color: #999; font-style: italic;">No names available</div>`;
-                    }
-                    
-                    html += `
-                                </div>
-                            </div>
-                    `;
-                    
-                    if (hasChildren) {
-                        html += generateHierarchy(item.children);
-                    }
-                    
-                    html += '</li>';
-                });
+                for (let j = 0; j < headers.length; j++) {
+                    obj[headers[j]] = currentline[j];
+                }
                 
-                html += '</ul>';
+                result.push(obj);
             }
             
-            return html;
+            return result;
         }
 
-        // Initialize the hierarchy
-        function initHierarchy() {
-            const hierarchyElement = document.getElementById('hierarchy');
-            hierarchyElement.innerHTML = generateHierarchy(hierarchyStructure);
+        // Build hierarchy tree from flat data
+        function buildHierarchy(data) {
+            const map = {};
+            const roots = [];
             
-            // Expand all button
-            document.getElementById('expandAll').addEventListener('click', function() {
-                showNotification('All levels expanded');
-            });
-            
-            // Collapse all button
-            document.getElementById('collapseAll').addEventListener('click', function() {
-                showNotification('All levels collapsed');
-            });
-            
-            // Excel file input
-            document.getElementById('excelFile').addEventListener('change', handleExcelUpload);
-        }
-        
-        // Handle Excel file upload
-        function handleExcelUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    
-                    // Assuming the first sheet is the one we need
-                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-                    
-                    // Process the Excel data
-                    processExcelData(jsonData);
-                } catch (error) {
-                    showNotification('Error processing Excel file: ' + error.message, true);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-        
-        // Process Excel data and update hierarchy
-        function processExcelData(excelData) {
-            // Create a copy of the hierarchy structure
-            const newHierarchyData = JSON.parse(JSON.stringify(hierarchyStructure));
-            
-            // Clear existing names
-            const clearHierarchyData = (data) => {
-                data.forEach(item => {
-                    item.names = [];
-                    if (item.children && item.children.length > 0) {
-                        clearHierarchyData(item.children);
-                    }
-                });
-            };
-            
-            clearHierarchyData(newHierarchyData);
-            
-            // Add names from Excel
-            excelData.forEach(row => {
-                const level = row.Level || row.Position || row.Role;
-                let name = row.Name || row.FullName;
-                
-                // If we have separate name and surname columns, combine them
-                if ((row.FirstName || row.Name) && row.Surname) {
-                    name = `${row.FirstName || row.Name} ${row.Surname}`;
-                }
-                
-                if (level && name) {
-                    addNameToHierarchy(newHierarchyData, level, name);
-                }
-            });
-            
-            // Update the display
-            const hierarchyElement = document.getElementById('hierarchy');
-            hierarchyElement.innerHTML = generateHierarchy(newHierarchyData);
-            
-            // Show confirmation
-            showNotification('Organizational data loaded successfully!');
-        }
-        
-        // Add name to hierarchy data
-        function addNameToHierarchy(data, position, newName) {
+            // First create a map of all nodes
             data.forEach(item => {
-                if (item.position === position) {
-                    item.names.push(newName);
-                }
+                map[item.Name] = { ...item, children: [] };
+            });
+            
+            // Then build the hierarchy
+            data.forEach(item => {
+                const node = map[item.Name];
                 
-                if (item.children && item.children.length > 0) {
-                    addNameToHierarchy(item.children, position, newName);
+                if (item.ReportsTo && map[item.ReportsTo]) {
+                    map[item.ReportsTo].children.push(node);
+                } else {
+                    roots.push(node);
                 }
             });
-        }
-        
-        // Show notification
-        function showNotification(message, isError = false) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.style.backgroundColor = isError ? '#e74c3c' : '#2ecc71';
-            notification.classList.add('show');
             
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+            return roots;
         }
-        
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initHierarchy);
+
+        // Render organization chart
+        function renderOrgChart(data, container) {
+            container.innerHTML = '';
+            
+            function createLevel(nodes, level = 0) {
+                const levelDiv = document.createElement('div');
+                levelDiv.className = 'level';
+                
+                nodes.forEach(node => {
+                    const nodeDiv = document.createElement('div');
+                    nodeDiv.className = 'node';
+                    nodeDiv.dataset.title = node.Title;
+                    
+                    nodeDiv.innerHTML = `
+                        <h3>${node.Title}</h3>
+                        <p>${node.Name}</p>
+                    `;
+                    
+                    levelDiv.appendChild(nodeDiv);
+                    
+                    if (node.children && node.children.length > 0) {
+                        const connector = document.createElement('div');
+                        connector.className = 'connector';
+                        container.appendChild(connector);
+                        
+                        createLevel(node.children, level + 1);
+                    }
+                });
+                
+                container.appendChild(levelDiv);
+            }
+            
+            createLevel(data);
+        }
+
+        // Filter organization chart by title
+        function filterByTitle(title) {
+            const allData = parseCSV(csvData);
+            let filteredData;
+            
+            if (title === 'all') {
+                filteredData = buildHierarchy(allData);
+            } else {
+                // Find the node with the selected title and build hierarchy from there
+                const nodeWithTitle = allData.find(item => item.Title === title);
+                if (nodeWithTitle) {
+                    const hierarchy = buildHierarchy(allData);
+                    // Find the node in the hierarchy
+                    function findNode(nodes, name) {
+                        for (const node of nodes) {
+                            if (node.Name === name) return node;
+                            if (node.children.length > 0) {
+                                const found = findNode(node.children, name);
+                                if (found) return found;
+                            }
+                        }
+                        return null;
+                    }
+                    filteredData = [findNode(hierarchy, nodeWithTitle.Name)];
+                } else {
+                    filteredData = buildHierarchy(allData);
+                }
+            }
+            
+            renderOrgChart(filteredData, document.getElementById('orgChart'));
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            const parsedData = parseCSV(csvData);
+            const hierarchy = buildHierarchy(parsedData);
+            renderOrgChart(hierarchy, document.getElementById('orgChart'));
+            
+            // Add event listeners to filter buttons
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    filterByTitle(this.dataset.filter);
+                });
+            });
+        });
     </script>
 </body>
 </html>
