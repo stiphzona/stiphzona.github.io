@@ -250,32 +250,32 @@
             try {
                 // In a real scenario, this would fetch from your data.csv
                 // For demonstration, we're using sample data
-                const sampleData = `FirstName,Surname,Position,Area
-John,Smith,Chief Magistrate,National
-Jane,Doe,Deputy Chief Magistrate,National
-Robert,Johnson,Regional Magistrate,Eastern Region
-Maria,Garcia,Regional Magistrate,Western Region
-David,Wilson,Provincial Magistrate,East Province
-Lisa,Anderson,Provincial Magistrate,West Province
-James,Brown,Senior Magistrate,North District
-Emily,Taylor,Senior Magistrate,South District
-Michael,Thomas,Resident Magistrate,City A
-Sarah,Moore,Resident Magistrate,City B
-William,Jackson,Magistrate,Town X
-Elizabeth,White,Magistrate,Town Y`;
+//                 const sampleData = `FirstName,Surname,Position,Area
+// John,Smith,Chief Magistrate,National
+// Jane,Doe,Deputy Chief Magistrate,National
+// Robert,Johnson,Regional Magistrate,Eastern Region
+// Maria,Garcia,Regional Magistrate,Western Region
+// David,Wilson,Provincial Magistrate,East Province
+// Lisa,Anderson,Provincial Magistrate,West Province
+// James,Brown,Senior Magistrate,North District
+// Emily,Taylor,Senior Magistrate,South District
+// Michael,Thomas,Resident Magistrate,City A
+// Sarah,Moore,Resident Magistrate,City B
+// William,Jackson,Magistrate,Town X
+// Elizabeth,White,Magistrate,Town Y`;
 
-                // Parse the sample data (replace with your actual CSV loading)
-                return parseCSV(sampleData);
+//                 // Parse the sample data (replace with your actual CSV loading)
+//                 return parseCSV(sampleData);
                 
                 // In your actual implementation, use this:
-                /*
+                
                 const response = await fetch('data.csv');
                 if (!response.ok) {
                     throw new Error('Failed to load data.csv');
                 }
                 const csvText = await response.text();
                 return parseCSV(csvText);
-                */
+                
             } catch (error) {
                 console.error('Error loading CSV:', error);
                 document.getElementById('loading').textContent = 'Error loading data. Please make sure data.csv exists.';
