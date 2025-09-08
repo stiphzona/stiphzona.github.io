@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organization Hierarchy</title>
+    <title>Judicial Hierarchy</title>
     <style>
         * {
             margin: 0;
@@ -151,6 +151,13 @@
             font-size: 0.9rem;
         }
         
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+            color: #7f8c8d;
+        }
+        
         @media (max-width: 768px) {
             .level {
                 flex-direction: column;
@@ -176,9 +183,14 @@
             <button class="filter-btn" data-filter="Chief Magistrate">Chief Magistrate</button>
             <button class="filter-btn" data-filter="Deputy Chief Magistrate">Deputy Chief Magistrate</button>
             <button class="filter-btn" data-filter="Regional Magistrate">Regional Magistrate</button>
+            <button class="filter-btn" data-filter="Provincial Magistrate">Provincial Magistrate</button>
+            <button class="filter-btn" data-filter="Senior Magistrate">Senior Magistrate</button>
+            <button class="filter-btn" data-filter="Resident Magistrate">Resident Magistrate</button>
+            <button class="filter-btn" data-filter="Magistrate">Magistrate</button>
         </div>
         
         <div class="hierarchy-container">
+            <div class="loading" id="loading">Loading organization data...</div>
             <div class="org-chart" id="orgChart">
                 <!-- Organization chart will be generated here -->
             </div>
@@ -190,33 +202,60 @@
     </div>
 
     <script>
-        // Sample CSV data (in a real scenario, this would be loaded from a separate file)
-        const csvData = `Name,Title,ReportsTo
-Sarah Johnson,Chief Magistrate,
-Michael Brown,Deputy Chief Magistrate,Chief Magistrate
-Emily Davis,Regional Magistrate,Deputy Chief Magistrate
-Robert Wilson,Regional Magistrate,Deputy Chief Magistrate
-Jennifer Lee,Provincial Magistrate,Regional Magistrate
-David Miller,Provincial Magistrate,Regional Magistrate
-Jessica Garcia,Senior Magistrate,Provincial Magistrate
-Christopher Martinez,Senior Magistrate,Provincial Magistrate
-Amanda Rodriguez,Resident Magistrate,Senior Magistrate
-Daniel Smith,Resident Magistrate,Senior Magistrate
-Matthew Taylor,Magistrate,Resident Magistrate
-Elizabeth Thomas,Magistrate,Resident Magistrate`;
+        // Define the hierarchy structure
+        const hierarchyStructure = {
+            'Chief Magistrate': null,
+            'Deputy Chief Magistrate': 'Chief Magistrate',
+            'Regional Magistrate': 'Deputy Chief Magistrate',
+            'Provincial Magistrate': 'Regional Magistrate',
+            'Senior Magistrate': 'Provincial Magistrate',
+            'Resident Magistrate': 'Senior Magistrate',
+            'Magistrate': 'Resident Magistrate'
+        };
+
+        // Load and parse CSV data
+        async function loadCSVData() {
+            try {
+                const response = await fetch('data.csv');
+                if (!response.ok) {
+                    throw new Error('Failed to load data.csv');
+                }
+                const csvText = await response.text();
+                return parseCSV(csvText);
+            } catch (error) {
+                console.error('Error loading CSV:', error);
+                document.getElementById('loading').textContent = 'Error loading data. Please make sure data.csv exists.';
+                return [];
+            }
+        }
 
         // Parse CSV data
         function parseCSV(csv) {
             const lines = csv.split('\n');
             const result = [];
-            const headers = lines[0].split(',');
+            
+            // Detect headers
+            const headers = lines[0].split(',').map(header => header.trim());
             
             for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                
                 const obj = {};
-                const currentline = lines[i].split(',');
+                const currentline = lines[i].split(',').map(item => item.trim());
                 
                 for (let j = 0; j < headers.length; j++) {
-                    obj[headers[j]] = currentline[j];
+                    obj[headers[j]] = currentline[j] || '';
+                }
+                
+                // Create a full name from FirstName and Surname
+                if (obj.FirstName && obj.Surname) {
+                    obj.Name = `${obj.FirstName} ${obj.Surname}`;
+                } else if (obj.FirstName) {
+                    obj.Name = obj.FirstName;
+                } else if (obj.Surname) {
+                    obj.Name = obj.Surname;
+                } else {
+                    obj.Name = 'Unknown';
                 }
                 
                 result.push(obj);
@@ -232,15 +271,31 @@ Elizabeth Thomas,Magistrate,Resident Magistrate`;
             
             // First create a map of all nodes
             data.forEach(item => {
-                map[item.Name] = { ...item, children: [] };
+                // Determine reporting based on position hierarchy
+                const reportsTo = hierarchyStructure[item.Position] || '';
+                map[item.Name] = { 
+                    name: item.Name, 
+                    position: item.Position, 
+                    reportsTo: reportsTo, 
+                    children: [] 
+                };
             });
             
             // Then build the hierarchy
             data.forEach(item => {
                 const node = map[item.Name];
                 
-                if (item.ReportsTo && map[item.ReportsTo]) {
-                    map[item.ReportsTo].children.push(node);
+                if (node.reportsTo) {
+                    // Find the superior by position
+                    const superior = Object.values(map).find(
+                        n => n.position === node.reportsTo
+                    );
+                    
+                    if (superior) {
+                        superior.children.push(node);
+                    } else {
+                        roots.push(node);
+                    }
                 } else {
                     roots.push(node);
                 }
@@ -260,11 +315,11 @@ Elizabeth Thomas,Magistrate,Resident Magistrate`;
                 nodes.forEach(node => {
                     const nodeDiv = document.createElement('div');
                     nodeDiv.className = 'node';
-                    nodeDiv.dataset.title = node.Title;
+                    nodeDiv.dataset.position = node.position;
                     
                     nodeDiv.innerHTML = `
-                        <h3>${node.Title}</h3>
-                        <p>${node.Name}</p>
+                        <h3>${node.position}</h3>
+                        <p>${node.name}</p>
                     `;
                     
                     levelDiv.appendChild(nodeDiv);
@@ -284,54 +339,61 @@ Elizabeth Thomas,Magistrate,Resident Magistrate`;
             createLevel(data);
         }
 
-        // Filter organization chart by title
-        function filterByTitle(title) {
-            const allData = parseCSV(csvData);
-            let filteredData;
+        // Filter organization chart by position
+        function filterByPosition(position) {
+            const allData = Array.from(document.querySelectorAll('.node'));
             
-            if (title === 'all') {
-                filteredData = buildHierarchy(allData);
+            if (position === 'all') {
+                allData.forEach(node => {
+                    node.style.display = 'block';
+                });
+                document.querySelectorAll('.level, .connector').forEach(el => {
+                    el.style.display = 'flex';
+                });
             } else {
-                // Find the node with the selected title and build hierarchy from there
-                const nodeWithTitle = allData.find(item => item.Title === title);
-                if (nodeWithTitle) {
-                    const hierarchy = buildHierarchy(allData);
-                    // Find the node in the hierarchy
-                    function findNode(nodes, name) {
-                        for (const node of nodes) {
-                            if (node.Name === name) return node;
-                            if (node.children.length > 0) {
-                                const found = findNode(node.children, name);
-                                if (found) return found;
-                            }
+                // Hide all nodes first
+                allData.forEach(node => {
+                    node.style.display = 'none';
+                });
+                
+                // Show nodes with the selected position
+                const selectedNodes = document.querySelectorAll(`.node[data-position="${position}"]`);
+                selectedNodes.forEach(node => {
+                    node.style.display = 'block';
+                    // Show parent levels
+                    let currentLevel = node.closest('.level');
+                    while (currentLevel) {
+                        currentLevel.style.display = 'flex';
+                        const prevConnector = currentLevel.previousElementSibling;
+                        if (prevConnector && prevConnector.classList.contains('connector')) {
+                            prevConnector.style.display = 'block';
                         }
-                        return null;
+                        currentLevel = currentLevel.previousElementSibling?.previousElementSibling;
                     }
-                    filteredData = [findNode(hierarchy, nodeWithTitle.Name)];
-                } else {
-                    filteredData = buildHierarchy(allData);
-                }
+                });
             }
-            
-            renderOrgChart(filteredData, document.getElementById('orgChart'));
         }
 
         // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            const parsedData = parseCSV(csvData);
-            const hierarchy = buildHierarchy(parsedData);
-            renderOrgChart(hierarchy, document.getElementById('orgChart'));
+        document.addEventListener('DOMContentLoaded', async function() {
+            const data = await loadCSVData();
             
-            // Add event listeners to filter buttons
-            document.querySelectorAll('.filter-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    document.querySelectorAll('.filter-btn').forEach(btn => {
-                        btn.classList.remove('active');
+            if (data.length > 0) {
+                document.getElementById('loading').style.display = 'none';
+                const hierarchy = buildHierarchy(data);
+                renderOrgChart(hierarchy, document.getElementById('orgChart'));
+                
+                // Add event listeners to filter buttons
+                document.querySelectorAll('.filter-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        document.querySelectorAll('.filter-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                        filterByPosition(this.dataset.filter);
                     });
-                    this.classList.add('active');
-                    filterByTitle(this.dataset.filter);
                 });
-            });
+            }
         });
     </script>
 </body>
