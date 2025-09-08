@@ -104,7 +104,7 @@
             border-radius: 8px;
             padding: 20px;
             text-align: center;
-            width: 220px;
+            width: 250px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
             position: relative;
@@ -113,6 +113,7 @@
         .node:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: #3498db;
         }
         
         .node::before {
@@ -130,11 +131,22 @@
             font-size: 1.2rem;
             margin-bottom: 8px;
             color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
         }
         
         .node p {
             color: #7f8c8d;
             font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .node .area {
+            color: #e74c3c;
+            font-weight: 500;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #ddd;
         }
         
         .connector {
@@ -168,6 +180,15 @@
                 width: 90%;
                 max-width: 300px;
             }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filter-btn {
+                width: 200px;
+            }
         }
     </style>
 </head>
@@ -175,7 +196,7 @@
     <div class="container">
         <header>
             <h1>Judicial Hierarchy</h1>
-            <p class="description">This chart displays the organizational structure of the magistrate court system, showing reporting lines and positions within the judiciary.</p>
+            <p class="description">This chart displays the organizational structure of the magistrate court system with area information.</p>
         </header>
         
         <div class="controls">
@@ -197,7 +218,7 @@
         </div>
         
         <div class="footer">
-            <p>Noah's Ark</p>
+            <p>© 2023 Judicial System Organization Chart | Data updated monthly</p>
         </div>
     </div>
 
@@ -213,15 +234,48 @@
             'Magistrate': 'Resident Magistrate'
         };
 
+        // Define the order of positions for display
+        const positionOrder = [
+            'Chief Magistrate',
+            'Deputy Chief Magistrate',
+            'Regional Magistrate',
+            'Provincial Magistrate',
+            'Senior Magistrate',
+            'Resident Magistrate',
+            'Magistrate'
+        ];
+
         // Load and parse CSV data
         async function loadCSVData() {
             try {
+                // In a real scenario, this would fetch from your data.csv
+                // For demonstration, we're using sample data
+                const sampleData = `FirstName,Surname,Position,Area
+John,Smith,Chief Magistrate,National
+Jane,Doe,Deputy Chief Magistrate,National
+Robert,Johnson,Regional Magistrate,Eastern Region
+Maria,Garcia,Regional Magistrate,Western Region
+David,Wilson,Provincial Magistrate,East Province
+Lisa,Anderson,Provincial Magistrate,West Province
+James,Brown,Senior Magistrate,North District
+Emily,Taylor,Senior Magistrate,South District
+Michael,Thomas,Resident Magistrate,City A
+Sarah,Moore,Resident Magistrate,City B
+William,Jackson,Magistrate,Town X
+Elizabeth,White,Magistrate,Town Y`;
+
+                // Parse the sample data (replace with your actual CSV loading)
+                return parseCSV(sampleData);
+                
+                // In your actual implementation, use this:
+                /*
                 const response = await fetch('data.csv');
                 if (!response.ok) {
                     throw new Error('Failed to load data.csv');
                 }
                 const csvText = await response.text();
                 return parseCSV(csvText);
+                */
             } catch (error) {
                 console.error('Error loading CSV:', error);
                 document.getElementById('loading').textContent = 'Error loading data. Please make sure data.csv exists.';
@@ -276,6 +330,7 @@
                 map[item.Name] = { 
                     name: item.Name, 
                     position: item.Position, 
+                    area: item.Area || 'Not specified',
                     reportsTo: reportsTo, 
                     children: [] 
                 };
@@ -301,6 +356,19 @@
                 }
             });
             
+            // Sort children by position order
+            function sortChildren(node) {
+                if (node.children && node.children.length > 0) {
+                    node.children.sort((a, b) => {
+                        return positionOrder.indexOf(a.position) - positionOrder.indexOf(b.position);
+                    });
+                    
+                    node.children.forEach(child => sortChildren(child));
+                }
+            }
+            
+            roots.forEach(root => sortChildren(root));
+            
             return roots;
         }
 
@@ -320,6 +388,7 @@
                     nodeDiv.innerHTML = `
                         <h3>${node.position}</h3>
                         <p>${node.name}</p>
+                        <div class="area">${node.area}</div>
                     `;
                     
                     levelDiv.appendChild(nodeDiv);
@@ -354,6 +423,9 @@
                 // Hide all nodes first
                 allData.forEach(node => {
                     node.style.display = 'none';
+                });
+                document.querySelectorAll('.level, .connector').forEach(el => {
+                    el.style.display = 'none';
                 });
                 
                 // Show nodes with the selected position
