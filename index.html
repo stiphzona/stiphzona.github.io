@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Magistrate Hierarchy</title>
+    <title>Magistrate Hierarchy with Excel Import</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -95,6 +96,27 @@
             color: white;
             padding: 6px 12px;
             font-size: 0.9rem;
+        }
+        
+        .btn-excel {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
         }
         
         .hierarchy-container {
@@ -325,10 +347,14 @@
     <div class="container">
         <header>
             <h1>Magistrate Hierarchy</h1>
-            <p class="description">View and manage organizational structure</p>
+            <p class="description">View and manage organizational structure with Excel import</p>
         </header>
         
         <div class="controls">
+            <button class="btn-excel">
+                <i class="fas fa-file-excel"></i> Import from Excel
+                <input type="file" id="excelFile" class="file-input" accept=".xlsx, .xls">
+            </button>
             <button class="btn-expand" id="expandAll">
                 <i class="fas fa-expand"></i> Expand All
             </button>
@@ -349,13 +375,13 @@
         <div class="instructions">
             <h3>How to Use:</h3>
             <ul>
+                <li>Click "Import from Excel" to load data from an Excel file</li>
+                <li>Excel file should have columns: Level, Name</li>
                 <li>Click on any name to edit it</li>
                 <li>Click the <i class="fas fa-plus-circle"></i> button to add a new name to a position</li>
                 <li>Click the <i class="fas fa-times"></i> icon to remove a name</li>
                 <li>Names are displayed horizontally for easy viewing</li>
-                <li>Use the buttons at the top to expand or collapse all sections</li>
                 <li>Click "Save Changes" to save your edits to browser storage</li>
-                <li>Your data will automatically load when you return</li>
             </ul>
         </div>
     </div>
@@ -363,7 +389,7 @@
     <div class="notification" id="notification"></div>
 
     <script>
-        // Hierarchy structure with support for multiple names
+        // Default hierarchy structure with support for multiple names
         const hierarchyData = [
             {
                 position: "Chief Magistrate",
@@ -514,6 +540,58 @@
                 // Show confirmation
                 showNotification('Changes saved successfully!');
             });
+            
+            // Excel file input
+            document.getElementById('excelFile').addEventListener('change', handleExcelUpload);
+        }
+        
+        // Handle Excel file upload
+        function handleExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // Assuming the first sheet is the one we need
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                
+                // Process the Excel data
+                processExcelData(jsonData);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        // Process Excel data and update hierarchy
+        function processExcelData(excelData) {
+            // Clear existing names
+            const clearHierarchyData = (data) => {
+                data.forEach(item => {
+                    item.names = [];
+                    if (item.children && item.children.length > 0) {
+                        clearHierarchyData(item.children);
+                    }
+                });
+            };
+            
+            clearHierarchyData(hierarchyData);
+            
+            // Add names from Excel
+            excelData.forEach(row => {
+                const level = row.Level;
+                const name = row.Name;
+                
+                if (level && name) {
+                    addNameToHierarchy(hierarchyData, level, name);
+                }
+            });
+            
+            // Update the display
+            initHierarchy();
+            showNotification('Data imported from Excel successfully!');
         }
         
         // Update name in hierarchy data
