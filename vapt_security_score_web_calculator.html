@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAPT Security Score Calculator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        margin: 0;
+        padding: 20px;
+    }
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    h1 {
+        text-align: center;
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .section {
+        background: #020617;
+        padding: 15px;
+        border-radius: 8px;
+    }
+    label {
+        display: block;
+        margin-top: 10px;
+    }
+    input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 5px;
+        border: none;
+    }
+    .checkbox {
+        margin-top: 10px;
+    }
+    button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 20px;
+        background: #22c55e;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .results {
+        margin-top: 20px;
+        padding: 15px;
+        background: #020617;
+        border-radius: 8px;
+    }
+    .score {
+        font-size: 32px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>VAPT Security Score Calculator</h1>
+
+<div class="grid">
+
+<div class="section">
+<h3>On-Prem Vulnerabilities</h3>
+<label>Critical</label>
+<input id="op_critical" type="number" value="0">
+<label>High</label>
+<input id="op_high" type="number" value="0">
+<label>Medium</label>
+<input id="op_medium" type="number" value="0">
+<label>Low</label>
+<input id="op_low" type="number" value="0">
+</div>
+
+<div class="section">
+<h3>Cloud Vulnerabilities</h3>
+<label>Critical</label>
+<input id="cl_critical" type="number" value="0">
+<label>High</label>
+<input id="cl_high" type="number" value="0">
+<label>Medium</label>
+<input id="cl_medium" type="number" value="0">
+<label>Low</label>
+<input id="cl_low" type="number" value="0">
+</div>
+
+</div>
+
+<div class="section">
+<h3>Risk Adjustments</h3>
+<div class="checkbox"><input type="checkbox" id="exploit"> Exploited Vulnerabilities (-25)</div>
+<div class="checkbox"><input type="checkbox" id="rce"> RCE Present (-20)</div>
+<div class="checkbox"><input type="checkbox" id="creds"> Weak Credentials (-15)</div>
+<div class="checkbox"><input type="checkbox" id="unsupported"> Unsupported Systems (-10)</div>
+<div class="checkbox"><input type="checkbox" id="protocols"> Insecure Protocols (-10)</div>
+</div>
+
+<button onclick="calculate()">Calculate Score</button>
+
+<div class="results">
+<h3>Results</h3>
+<p>Base Score: <span id="baseScore">0</span></p>
+<p>Adjusted Score: <span id="adjustedScore">0</span></p>
+<p>Risk Rating: <span id="rating">-</span></p>
+</div>
+
+</div>
+
+<script>
+function calculate() {
+
+    const weights = {critical:10, high:7, medium:4, low:1};
+
+    function getVal(id){ return parseInt(document.getElementById(id).value) || 0; }
+
+    let op = (getVal('op_critical')*10) + (getVal('op_high')*7) + (getVal('op_medium')*4) + (getVal('op_low')*1);
+    let cl = (getVal('cl_critical')*10) + (getVal('cl_high')*7) + (getVal('cl_medium')*4) + (getVal('cl_low')*1);
+
+    let totalRisk = op + cl;
+    let maxRisk = 2000;
+
+    let baseScore = 100 - (totalRisk / maxRisk * 100);
+
+    let penalty = 0;
+
+    if(document.getElementById('exploit').checked) penalty += 25;
+    if(document.getElementById('rce').checked) penalty += 20;
+    if(document.getElementById('creds').checked) penalty += 15;
+    if(document.getElementById('unsupported').checked) penalty += 10;
+    if(document.getElementById('protocols').checked) penalty += 10;
+
+    let adjustedScore = baseScore - penalty;
+    if(adjustedScore < 0) adjustedScore = 0;
+
+    function getRating(score){
+        if(score >= 80) return "Low Risk";
+        if(score >= 60) return "Medium Risk";
+        if(score >= 40) return "High Risk";
+        return "Critical";
+    }
+
+    document.getElementById('baseScore').innerText = baseScore.toFixed(2);
+    document.getElementById('adjustedScore').innerText = adjustedScore.toFixed(2);
+    document.getElementById('rating').innerText = getRating(adjustedScore);
+}
+</script>
+
+</body>
+</html>
