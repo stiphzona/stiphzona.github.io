@@ -12,7 +12,7 @@ body {
     background: #0f172a;
     color: #e2e8f0;
     margin: 0;
-    padding: 10px;
+    padding: 15px;
 }
 
 .container {
@@ -21,6 +21,7 @@ body {
     background: #1e293b;
     padding: 15px;
     border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
 }
 
 /* HEADER */
@@ -29,19 +30,21 @@ body {
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
+    justify-content: center;
 }
 
 .logo {
-    height: 35px;
+    height: 40px;
 }
 
 h1 {
-    font-size: 18px;
-    margin: 0;
+    font-size: 20px;
+    margin: 5px 0 10px;
+    text-align: center;
 }
 
-/* MAIN LAYOUT */
-.main-layout {
+/* TWO COLUMN FOR ONPREM + CLOUD */
+.grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
@@ -50,77 +53,62 @@ h1 {
 /* SECTIONS */
 .section {
     background: #020617;
-    padding: 10px;
+    padding: 12px;
     border-radius: 8px;
-    margin-bottom: 8px;
 }
 
 h3 {
-    font-size: 14px;
-    margin: 5px 0 8px;
+    margin-bottom: 8px;
+    font-size: 15px;
 }
 
-/* INPUT GRID */
-.input-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-}
-
+/* INPUTS (VERTICAL) */
 label {
-    font-size: 12px;
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
 }
 
 input[type="number"] {
     width: 100%;
-    padding: 5px;
+    padding: 6px;
+    margin-top: 3px;
     border-radius: 5px;
     border: none;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 /* CHECKBOX */
 .checkbox {
-    font-size: 12px;
-    margin-bottom: 4px;
+    margin-top: 6px;
+    font-size: 13px;
 }
 
 /* BUTTON */
 button {
     width: 100%;
-    padding: 8px;
-    margin-top: 8px;
+    padding: 10px;
+    margin-top: 12px;
     background: #22c55e;
     border: none;
     color: white;
-    font-size: 14px;
+    font-size: 15px;
     border-radius: 6px;
     cursor: pointer;
 }
 
 /* RESULTS */
 .results {
-    background: #020617;
+    margin-top: 12px;
     padding: 12px;
+    background: #020617;
     border-radius: 8px;
 }
 
 .score {
-    font-size: 30px;
+    font-size: 28px;
     font-weight: bold;
 }
-
-.rating {
-    font-size: 16px;
-    font-weight: bold;
-    margin-top: 5px;
-}
-
-/* SCORE COLORS */
-.low { color: #22c55e; }
-.medium { color: #eab308; }
-.high { color: #f97316; }
-.critical { color: #ef4444; }
 
 .small-text {
     font-size: 11px;
@@ -130,5 +118,122 @@ button {
 </style>
 </head>
 
-<body> <div class="container"> <div style="text-align: center;"> <img src="kenac-logo.png" alt="Kenac Logo" class="logo"> <!-- <h1>Security Risk Scorer</h1> --> </div> <h1>VAPT Security Score Calculator</h1> <div class="grid"> <div class="section"> <h3>On-Prem Vulnerabilities</h3> <label>Critical</label> <input id="op_critical" type="number" value="0"> <label>High</label> <input id="op_high" type="number" value="0"> <label>Medium</label> <input id="op_medium" type="number" value="0"> <label>Low</label> <input id="op_low" type="number" value="0"> </div> <div class="section"> <h3>Cloud Vulnerabilities</h3> <label>Critical</label> <input id="cl_critical" type="number" value="0"> <label>High</label> <input id="cl_high" type="number" value="0"> <label>Medium</label> <input id="cl_medium" type="number" value="0"> <label>Low</label> <input id="cl_low" type="number" value="0"> </div> </div> <div class="section"> <h3>Risk Adjustments</h3> <div class="checkbox"><input type="checkbox" id="exploit"> Exploited Vulnerabilities (-25)</div> <div class="checkbox"><input type="checkbox" id="rce"> RCE Present (-20)</div> <div class="checkbox"><input type="checkbox" id="creds"> Weak Credentials (-15)</div> <div class="checkbox"><input type="checkbox" id="unsupported"> Unsupported Systems (-10)</div> <div class="checkbox"><input type="checkbox" id="protocols"> Insecure Protocols (-10)</div> </div> <button onclick="calculate()">Calculate Score</button> <div class="results"> <h3>Results</h3> <p>Base Score: <span id="baseScore">0</span></p> <p style="font-size:12px; color:#94a3b8;">Represents the automated risk score based purely on vulnerability counts and severity weighting.</p> <p>Adjusted Score: <span id="adjustedScore">0</span></p> <p style="font-size:12px; color:#94a3b8;">Reflects real-world risk after factoring in exploitability, critical weaknesses, and validated findings.</p> <p>Risk Rating: <span id="rating">-</span></p> <p style="font-size:12px; color:#94a3b8;">Overall security posture classification based on the adjusted score.</p> </div> </div> <script> function calculate() { const weights = {critical:10, high:7, medium:4, low:1}; function getVal(id){ return parseInt(document.getElementById(id).value) || 0; } let op = (getVal('op_critical')*10) + (getVal('op_high')*7) + (getVal('op_medium')*4) + (getVal('op_low')*1); let cl = (getVal('cl_critical')*10) + (getVal('cl_high')*7) + (getVal('cl_medium')*4) + (getVal('cl_low')*1); let totalRisk = op + cl; let maxRisk = 2000; let baseScore = 100 - (totalRisk / maxRisk * 100); let penalty = 0; if(document.getElementById('exploit').checked) penalty += 25; if(document.getElementById('rce').checked) penalty += 20; if(document.getElementById('creds').checked) penalty += 15; if(document.getElementById('unsupported').checked) penalty += 10; if(document.getElementById('protocols').checked) penalty += 10; let adjustedScore = baseScore - penalty; if(adjustedScore < 0) adjustedScore = 0; function getRating(score){ if(score >= 80) return "Low Risk"; if(score >= 60) return "Medium Risk"; if(score >= 40) return "High Risk"; return "Critical"; } document.getElementById('baseScore').innerText = baseScore.toFixed(2); document.getElementById('adjustedScore').innerText = adjustedScore.toFixed(2); document.getElementById('rating').innerText = getRating(adjustedScore); } </script> </body> </html>
+<body>
+
+<div class="container">
+
+<div class="header">
+    <img src="kenac-logo.png" alt="Kenac Logo" class="logo">
+</div>
+
+<h1>VAPT Security Score Calculator</h1>
+
+<!-- ON PREM + CLOUD SIDE BY SIDE -->
+<div class="grid">
+
+<div class="section">
+<h3>On-Prem Vulnerabilities</h3>
+
+<label>Critical</label>
+<input id="op_critical" type="number" value="0">
+
+<label>High</label>
+<input id="op_high" type="number" value="0">
+
+<label>Medium</label>
+<input id="op_medium" type="number" value="0">
+
+<label>Low</label>
+<input id="op_low" type="number" value="0">
+
+</div>
+
+<div class="section">
+<h3>Cloud Vulnerabilities</h3>
+
+<label>Critical</label>
+<input id="cl_critical" type="number" value="0">
+
+<label>High</label>
+<input id="cl_high" type="number" value="0">
+
+<label>Medium</label>
+<input id="cl_medium" type="number" value="0">
+
+<label>Low</label>
+<input id="cl_low" type="number" value="0">
+
+</div>
+
+</div>
+
+<!-- RISK ADJUSTMENTS -->
+<div class="section">
+<h3>Risk Adjustments</h3>
+
+<div class="checkbox"><input type="checkbox" id="exploit"> Exploited Vulnerabilities (-25)</div>
+<div class="checkbox"><input type="checkbox" id="rce"> RCE Present (-20)</div>
+<div class="checkbox"><input type="checkbox" id="creds"> Weak Credentials (-15)</div>
+<div class="checkbox"><input type="checkbox" id="unsupported"> Unsupported Systems (-10)</div>
+<div class="checkbox"><input type="checkbox" id="protocols"> Insecure Protocols (-10)</div>
+
+</div>
+
+<button onclick="calculate()">Calculate Score</button>
+
+<!-- RESULTS -->
+<div class="results">
+<h3>Results</h3>
+
+<p>Base Score: <span id="baseScore">0</span></p>
+<p class="small-text">Based on vulnerability severity weighting</p>
+
+<p>Adjusted Score: <span id="adjustedScore">0</span></p>
+<p class="small-text">Adjusted for real-world risk factors</p>
+
+<p>Risk Rating: <span id="rating">-</span></p>
+<p class="small-text">Overall security posture classification</p>
+
+</div>
+
+</div>
+
+<script>
+function calculate() {
+
+    function getVal(id){ return parseInt(document.getElementById(id).value) || 0; }
+
+    let op = (getVal('op_critical')*10) + (getVal('op_high')*7) + (getVal('op_medium')*4) + (getVal('op_low')*1);
+    let cl = (getVal('cl_critical')*10) + (getVal('cl_high')*7) + (getVal('cl_medium')*4) + (getVal('cl_low')*1);
+
+    let totalRisk = op + cl;
+    let maxRisk = 2000;
+
+    let baseScore = 100 - (totalRisk / maxRisk * 100);
+
+    let penalty = 0;
+
+    if(document.getElementById('exploit').checked) penalty += 25;
+    if(document.getElementById('rce').checked) penalty += 20;
+    if(document.getElementById('creds').checked) penalty += 15;
+    if(document.getElementById('unsupported').checked) penalty += 10;
+    if(document.getElementById('protocols').checked) penalty += 10;
+
+    let adjustedScore = baseScore - penalty;
+    if(adjustedScore < 0) adjustedScore = 0;
+
+    function getRating(score){
+        if(score >= 80) return "Low Risk";
+        if(score >= 60) return "Medium Risk";
+        if(score >= 40) return "High Risk";
+        return "Critical";
+    }
+
+    document.getElementById('baseScore').innerText = baseScore.toFixed(2);
+    document.getElementById('adjustedScore').innerText = adjustedScore.toFixed(2);
+    document.getElementById('rating').innerText = getRating(adjustedScore);
+}
+</script>
+
+</body>
 </html>
