@@ -16,7 +16,7 @@ body {
 }
 
 .container {
-    max-width: 950px;
+    max-width: 900px;
     margin: auto;
     background: #1e293b;
     padding: 15px;
@@ -115,6 +115,12 @@ button {
     color: #94a3b8;
     margin-top: 2px;
 }
+
+.low { color: #22c55e; }      /* Green */
+.medium { color: #eab308; }   /* Yellow */
+.high { color: #f97316; }     /* Orange */
+.critical { color: #ef4444; } /* Red */
+
 </style>
 </head>
 
@@ -223,15 +229,24 @@ function calculate() {
     if(adjustedScore < 0) adjustedScore = 0;
 
     function getRating(score){
-        if(score >= 80) return "Low Risk";
-        if(score >= 60) return "Medium Risk";
-        if(score >= 40) return "High Risk";
-        return "Critical";
+        if(score >= 80) return {text:"Low Risk", class:"low"};
+        if(score >= 60) return {text:"Medium Risk", class:"medium"};
+        if(score >= 40) return {text:"High Risk", class:"high"};
+        return {text:"Critical", class:"critical"};
     }
+
 
     document.getElementById('baseScore').innerText = baseScore.toFixed(2);
     document.getElementById('adjustedScore').innerText = adjustedScore.toFixed(2);
-    document.getElementById('rating').innerText = getRating(adjustedScore);
+    let ratingObj = getRating(adjustedScore);
+
+    let ratingEl = document.getElementById('rating');
+    ratingEl.innerText = ratingObj.text;
+    ratingEl.className = ratingObj.class;
+
+    let scoreEl = document.getElementById('adjustedScore');
+    scoreEl.className = ratingObj.class;
+
 }
 </script>
 
