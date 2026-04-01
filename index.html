@@ -4,157 +4,201 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- <div class="header">
-    <img src="kenac-logo.png" alt="Kenac Logo" class="logo"> -->
-    <!-- <h1>Security Risk Scorer</h1> -->
-    <!-- </div> -->
-
-    
 <title>VAPT Security Score Calculator</title>
-<style>
-    
-    body {
-        font-family: Arial, sans-serif;
-        background: #0f172a;
-        color: #e2e8f0;
-        margin: 0;
-        padding: 20px;
-    }
-    .container {
-        max-width: 1000px;
-        margin: auto;
-        background: #1e293b;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    }
 
-    .header {
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    margin: 0;
+    padding: 10px;
+}
+
+.container {
+    max-width: 950px;
+    margin: auto;
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+/* HEADER */
+.header {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 20px;
-    }
+    gap: 10px;
+    margin-bottom: 10px;
+}
 
-    .logo {
-    height: 50px;
-    width: auto;
-    }
+.logo {
+    height: 35px;
+}
 
-    
-    h1 {
-        text-align: center;
-    }
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-    }
-    .section {
-        background: #020617;
-        padding: 15px;
-        border-radius: 8px;
-    }
-    label {
-        display: block;
-        margin-top: 10px;
-    }
-    input[type="number"] {
-        width: 100%;
-        padding: 8px;
-        margin-top: 5px;
-        border-radius: 5px;
-        border: none;
-    }
-    .checkbox {
-        margin-top: 10px;
-    }
-    button {
-        width: 100%;
-        padding: 12px;
-        margin-top: 20px;
-        background: #22c55e;
-        border: none;
-        color: white;
-        font-size: 16px;
-        border-radius: 8px;
-        cursor: pointer;
-    }
-    .results {
-        margin-top: 20px;
-        padding: 15px;
-        background: #020617;
-        border-radius: 8px;
-    }
-    .score {
-        font-size: 32px;
-        font-weight: bold;
-    }
+h1 {
+    font-size: 18px;
+    margin: 0;
+}
+
+/* MAIN LAYOUT */
+.main-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* SECTIONS */
+.section {
+    background: #020617;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+h3 {
+    font-size: 14px;
+    margin: 5px 0 8px;
+}
+
+/* INPUT GRID */
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+label {
+    font-size: 12px;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    font-size: 13px;
+}
+
+/* CHECKBOX */
+.checkbox {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 8px;
+    background: #22c55e;
+    border: none;
+    color: white;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* RESULTS */
+.results {
+    background: #020617;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.score {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.rating {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+/* SCORE COLORS */
+.low { color: #22c55e; }
+.medium { color: #eab308; }
+.high { color: #f97316; }
+.critical { color: #ef4444; }
+
+.small-text {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
 </style>
 </head>
+
 <body>
+
 <div class="container">
-    <div style="text-align: center;">
+
+<div class="header">
     <img src="kenac-logo.png" alt="Kenac Logo" class="logo">
-    <!-- <h1>Security Risk Scorer</h1> -->
-    </div>
-<h1>VAPT Security Score Calculator</h1>
+    <h1>VAPT Security Score</h1>
+</div>
 
-<div class="grid">
+<div class="main-layout">
+
+<!-- LEFT SIDE -->
+<div>
 
 <div class="section">
-<h3>On-Prem Vulnerabilities</h3>
-<label>Critical</label>
-<input id="op_critical" type="number" value="0">
-<label>High</label>
-<input id="op_high" type="number" value="0">
-<label>Medium</label>
-<input id="op_medium" type="number" value="0">
-<label>Low</label>
-<input id="op_low" type="number" value="0">
+<h3>On-Prem</h3>
+<div class="input-grid">
+<div><label>Critical</label><input id="op_critical" type="number" value="0"></div>
+<div><label>High</label><input id="op_high" type="number" value="0"></div>
+<div><label>Medium</label><input id="op_medium" type="number" value="0"></div>
+<div><label>Low</label><input id="op_low" type="number" value="0"></div>
+</div>
 </div>
 
 <div class="section">
-<h3>Cloud Vulnerabilities</h3>
-<label>Critical</label>
-<input id="cl_critical" type="number" value="0">
-<label>High</label>
-<input id="cl_high" type="number" value="0">
-<label>Medium</label>
-<input id="cl_medium" type="number" value="0">
-<label>Low</label>
-<input id="cl_low" type="number" value="0">
+<h3>Cloud</h3>
+<div class="input-grid">
+<div><label>Critical</label><input id="cl_critical" type="number" value="0"></div>
+<div><label>High</label><input id="cl_high" type="number" value="0"></div>
+<div><label>Medium</label><input id="cl_medium" type="number" value="0"></div>
+<div><label>Low</label><input id="cl_low" type="number" value="0"></div>
 </div>
-
 </div>
 
 <div class="section">
 <h3>Risk Adjustments</h3>
-<div class="checkbox"><input type="checkbox" id="exploit"> Exploited Vulnerabilities (-25)</div>
-<div class="checkbox"><input type="checkbox" id="rce"> RCE Present (-20)</div>
-<div class="checkbox"><input type="checkbox" id="creds"> Weak Credentials (-15)</div>
-<div class="checkbox"><input type="checkbox" id="unsupported"> Unsupported Systems (-10)</div>
+<div class="checkbox"><input type="checkbox" id="exploit"> Exploited (-25)</div>
+<div class="checkbox"><input type="checkbox" id="rce"> RCE (-20)</div>
+<div class="checkbox"><input type="checkbox" id="creds"> Weak Creds (-15)</div>
+<div class="checkbox"><input type="checkbox" id="unsupported"> Unsupported (-10)</div>
 <div class="checkbox"><input type="checkbox" id="protocols"> Insecure Protocols (-10)</div>
 </div>
 
-<button onclick="calculate()">Calculate Score</button>
+<button onclick="calculate()">Calculate</button>
 
+</div>
+
+<!-- RIGHT SIDE -->
 <div class="results">
+
 <h3>Results</h3>
+
+<div class="score" id="adjustedScore">0</div>
+<div class="rating" id="rating">-</div>
+
 <p>Base Score: <span id="baseScore">0</span></p>
-<p style="font-size:12px; color:#94a3b8;">Represents the automated risk score based purely on vulnerability counts and severity weighting.</p>
-<p>Adjusted Score: <span id="adjustedScore">0</span></p>
-<p style="font-size:12px; color:#94a3b8;">Reflects real-world risk after factoring in exploitability, critical weaknesses, and validated findings.</p>
-<p>Risk Rating: <span id="rating">-</span></p>
-<p style="font-size:12px; color:#94a3b8;">Overall security posture classification based on the adjusted score.</p>
+<p class="small-text">Score based on vulnerability severity</p>
+
+<p>Adjusted Score: <span id="adjustedScoreText">0</span></p>
+<p class="small-text">Adjusted for real-world risk</p>
+
+</div>
+
 </div>
 
 </div>
 
 <script>
 function calculate() {
-
-    const weights = {critical:10, high:7, medium:4, low:1};
 
     function getVal(id){ return parseInt(document.getElementById(id).value) || 0; }
 
@@ -178,15 +222,24 @@ function calculate() {
     if(adjustedScore < 0) adjustedScore = 0;
 
     function getRating(score){
-        if(score >= 80) return "Low Risk";
-        if(score >= 60) return "Medium Risk";
-        if(score >= 40) return "High Risk";
-        return "Critical";
+        if(score >= 80) return {text:"Low Risk", class:"low"};
+        if(score >= 60) return {text:"Medium Risk", class:"medium"};
+        if(score >= 40) return {text:"High Risk", class:"high"};
+        return {text:"Critical", class:"critical"};
     }
 
+    let ratingObj = getRating(adjustedScore);
+
     document.getElementById('baseScore').innerText = baseScore.toFixed(2);
-    document.getElementById('adjustedScore').innerText = adjustedScore.toFixed(2);
-    document.getElementById('rating').innerText = getRating(adjustedScore);
+    document.getElementById('adjustedScoreText').innerText = adjustedScore.toFixed(2);
+
+    let scoreEl = document.getElementById('adjustedScore');
+    scoreEl.innerText = adjustedScore.toFixed(0);
+    scoreEl.className = "score " + ratingObj.class;
+
+    let ratingEl = document.getElementById('rating');
+    ratingEl.innerText = ratingObj.text;
+    ratingEl.className = "rating " + ratingObj.class;
 }
 </script>
 
