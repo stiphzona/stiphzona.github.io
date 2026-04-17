@@ -205,9 +205,20 @@
             <button class="filter-btn" data-filter="Deputy Chief Magistrate">Deputy Chief Magistrate</button>
             <button class="filter-btn" data-filter="Regional Magistrate">Regional Magistrate</button>
             <button class="filter-btn" data-filter="Provincial Magistrate">Provincial Magistrate</button>
-            <button class="filter-btn" data-filter="Senior Magistrate">Senior Magistrate</button>
+            <!-- <button class="filter-btn" data-filter="Senior Magistrate">Senior Magistrate</button> -->
             <button class="filter-btn" data-filter="Resident Magistrate">Resident Magistrate</button>
-            <button class="filter-btn" data-filter="Magistrate">Magistrate</button>
+            <button class="filter-btn" data-filter="ZACC Chairman">ZACC Chairman</button>
+            <button class="filter-btn" data-filter="ZACC Vice Chairperson">ZACC Vice Chairperson</button>
+            <button class="filter-btn" data-filter="ZACC Commissioner">ZACC Commissioner</button>
+            <button class="filter-btn" data-filter="ZACC Executive">ZACC Executive</button>
+            <button class="filter-btn" data-filter="ZACC Manager">ZACC Manager</button>
+            <button class="filter-btn" data-filter="ZINARA CEO">ZINARA CEO</button>
+            <button class="filter-btn" data-filter="ZINARA Chairperson">ZINARA Chairperson</button>
+            <button class="filter-btn" data-filter="ZINARA Vice Chairperson">ZINARA Vice Chairperson</button>
+            <button class="filter-btn" data-filter="ZINARA Board Member">ZINARA Board Member</button>
+            <button class="filter-btn" data-filter="ZINARA Director">ZINARA Director</button>
+            <button class="filter-btn" data-filter="ZINARA Manager">ZINARA Manager</button>
+            
         </div>
         
         <div class="hierarchy-container">
@@ -224,25 +235,34 @@
 
     <script>
         // Define the hierarchy structure
-        const hierarchyStructure = {
-    'Chief Magistrate':          null,
-    'Deputy Chief Magistrate':   'Chief Magistrate',
-    'Regional Magistrate':       'Deputy Chief Magistrate',
-    'Provincial Magistrate':     'Regional Magistrate',
-    'Senior Magistrate':         'Provincial Magistrate',
-    'Resident Magistrate':       'Senior Magistrate',
-    'Magistrate':                'Resident Magistrate'
-};
+//         const hierarchyStructure = {
+//     'Chief Magistrate':          null,
+//     'Deputy Chief Magistrate':   'Chief Magistrate',
+//     'Regional Magistrate':       'Deputy Chief Magistrate',
+//     'Provincial Magistrate':     'Regional Magistrate',
+//     'Senior Magistrate':         'Provincial Magistrate',
+//     'Resident Magistrate':       'Senior Magistrate',
+//     'Magistrate':                'Resident Magistrate'
+// };
         
-        // const hierarchyStructure = {
-        //     'Chief Magistrate': null,
-        //     'Deputy Chief Magistrate': 'Chief Magistrate',
-        //     'Regional Magistrate': 'Deputy Chief Magistrate',
-        //     'Provincial Magistrate': 'Regional Magistrate',
-        //     'Senior Magistrate': 'Provincial Magistrate',
-        //     'Resident Magistrate': 'Senior Magistrate',
-        //     'Magistrate': 'Resident Magistrate'
-        // };
+        const hierarchyStructure = {
+            'Chief Magistrate': null,
+            'Deputy Chief Magistrate': 'Chief Magistrate',
+            'Regional Magistrate': 'Deputy Chief Magistrate',
+            'Provincial Magistrate': 'Regional Magistrate',
+            'Resident Magistrate': 'Provincial Magistrate',
+            'Magistrate': 'Resident Magistrate',
+            'ZACC Chairman': null,
+            'ZACC Commissioner': 'ZACC Vice Chairperson',
+            'ZACC Executive': 'ZACC Commissioner',
+            'ZACC Manager': 'ZACC Executive',
+            'ZINARA Chairperson': 'ZACC Manager',
+            'ZINARA Vice Chairperson': 'ZINARA Chairperson',
+            'ZINARA Board Member': 'ZINARA Vice Chairperson',
+            'ZINARA CEO': 'ZINARA Board Member',
+            'ZINARA Director': 'ZINARA CEO',
+            'ZINARA Manager': 'ZINARA Director'
+        };
 
         // Define the order of positions for display
         const positionOrder = [
@@ -250,7 +270,6 @@
             'Deputy Chief Magistrate',
             'Regional Magistrate',
             'Provincial Magistrate',
-            'Senior Magistrate',
             'Resident Magistrate',
             'Magistrate'
         ];
