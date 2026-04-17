@@ -1,250 +1,512 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Noah's Ark</title>
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background-color: #f5f7fa;
-    font-family: 'Segoe UI', sans-serif;
-    padding: 20px;
-}
-
-.container {
-    max-width: 1200px;
-    margin: auto;
-}
-
-.controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.filter-btn {
-    padding: 10px 15px;
-    border: none;
-    background: #3498db;
-    color: white;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
-.filter-btn.active {
-    background: #2c3e50;
-}
-
-.hierarchy-container {
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-}
-
-.org-chart {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.level {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin: 20px 0;
-}
-
-.node {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    width: 220px;
-    text-align: center;
-    position: relative;
-}
-
-/* connector line ABOVE node */
-.node::before {
-    content: '';
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    width: 2px;
-    height: 15px;
-    background: #ccc;
-    transform: translateX(-50%);
-}
-
-/* remove top line from first level */
-.level:first-child .node::before {
-    display: none;
-}
-
-/* vertical connector to children */
-.connector {
-    width: 2px;
-    height: 20px;
-    background: #ccc;
-    margin: 0 auto;
-}
-
-.node h3 {
-    font-size: 16px;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 5px;
-}
-
-.node p {
-    font-size: 14px;
-    margin: 5px 0;
-}
-
-.area {
-    font-size: 12px;
-    color: #e74c3c;
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-<div class="controls">
-<button class="filter-btn active" data-filter="all">All Positions</button>
-<button class="filter-btn" data-filter="ZINARA Board Member">ZINARA Board Member</button>
-</div>
-
-<div class="hierarchy-container">
-<div id="orgChart" class="org-chart"></div>
-</div>
-
-</div>
-
-<script>
-
-const data = [
-{ Name: "Person 1", Position: "ZINARA Board Member", Area: "Area A" },
-{ Name: "Person 2", Position: "ZINARA CEO", Area: "Area B" },
-{ Name: "Person 3", Position: "ZINARA Director", Area: "Area C" },
-{ Name: "Person 4", Position: "ZINARA Manager", Area: "Area D" }
-];
-
-const hierarchyStructure = {
-'ZINARA Board Member': null,
-'ZINARA CEO': 'ZINARA Board Member',
-'ZINARA Director': 'ZINARA CEO',
-'ZINARA Manager': 'ZINARA Director'
-};
-
-function buildHierarchy(data) {
-    const map = {};
-    const roots = [];
-
-    data.forEach(item => {
-        map[item.Name] = {
-            ...item,
-            children: [],
-            reportsTo: hierarchyStructure[item.Position]
-        };
-    });
-
-    data.forEach(item => {
-        const node = map[item.Name];
-
-        if (node.reportsTo) {
-            const parent = Object.values(map).find(
-                n => n.Position === node.reportsTo
-            );
-            if (parent) parent.children.push(node);
-            else roots.push(node);
-        } else {
-            roots.push(node);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noah's Ark</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-    });
-
-    return roots;
-}
-
-function renderOrgChart(data, container) {
-
-    function createLevel(nodes, parentContainer) {
-
-        const levelDiv = document.createElement('div');
-        levelDiv.className = 'level';
-
-        nodes.forEach(node => {
-
-            const nodeDiv = document.createElement('div');
-            nodeDiv.className = 'node';
-            nodeDiv.dataset.position = node.Position;
-
-            nodeDiv.innerHTML = `
-                <h3>${node.Position}</h3>
-                <p>${node.Name}</p>
-                <div class="area">${node.Area}</div>
-            `;
-
-            levelDiv.appendChild(nodeDiv);
-
-            if (node.children.length > 0) {
-
-                const connector = document.createElement('div');
-                connector.className = 'connector';
-                nodeDiv.appendChild(connector);
-
-                const childContainer = document.createElement('div');
-                nodeDiv.appendChild(childContainer);
-
-                createLevel(node.children, childContainer);
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #2c3e50, #1a2530);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background-color: #2c3e50;
+        }
+        
+        .hierarchy-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        
+        .org-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .level {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+        
+        .node {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            width: 250px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .node:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: #3498db;
+        }
+        
+        .node::before {
+            content: '';
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 16px;
+            background-color: #ccc;
+        }
+        
+        .node h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        
+        .node p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .node .area {
+            color: #e74c3c;
+            font-weight: 500;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #ddd;
+        }
+        
+        .connector {
+            height: 25px;
+            width: 2px;
+            background-color: #ccc;
+            margin: 0 auto;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .level {
+                flex-direction: column;
+                align-items: center;
             }
-
-        });
-
-        parentContainer.appendChild(levelDiv);
-    }
-
-    createLevel(data, container);
-}
-
-function filterByPosition(position) {
-    const nodes = document.querySelectorAll('.node');
-
-    nodes.forEach(node => {
-        if (position === 'all' || node.dataset.position === position) {
-            node.style.display = 'block';
-        } else {
-            node.style.display = 'none';
+            
+            .node {
+                width: 90%;
+                max-width: 300px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filter-btn {
+                width: 200px;
+            }
         }
-    });
-}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Magistrates' Courts | ZINARA | ZACC</h1>
+            <p class="description">This chart displays the organizational structure of the magistrate court system with area information.</p>
+        </header>
+        
+        <div class="controls">
+            <button class="filter-btn active" data-filter="all">All Positions</button>
+            <button class="filter-btn" data-filter="Chief Magistrate">Chief Magistrate</button>
+            <button class="filter-btn" data-filter="Deputy Chief Magistrate">Deputy Chief Magistrate</button>
+            <button class="filter-btn" data-filter="Regional Magistrate">Regional Magistrate</button>
+            <button class="filter-btn" data-filter="Provincial Magistrate">Provincial Magistrate</button>
+            <!-- <button class="filter-btn" data-filter="Senior Magistrate">Senior Magistrate</button> -->
+            <button class="filter-btn" data-filter="Resident Magistrate">Resident Magistrate</button>
+            <button class="filter-btn" data-filter="ZACC Chairman">ZACC Chairman</button>
+            <button class="filter-btn" data-filter="ZACC Vice Chairperson">ZACC Vice Chairperson</button>
+            <button class="filter-btn" data-filter="ZACC Commissioner">ZACC Commissioner</button>
+            <button class="filter-btn" data-filter="ZACC Executive">ZACC Executive</button>
+            <button class="filter-btn" data-filter="ZACC Manager">ZACC Manager</button>
+            <button class="filter-btn" data-filter="ZINARA CEO">ZINARA CEO</button>
+            <button class="filter-btn" data-filter="ZINARA Chairperson">ZINARA Chairperson</button>
+            <button class="filter-btn" data-filter="ZINARA Vice Chairperson">ZINARA Vice Chairperson</button>
+            <button class="filter-btn" data-filter="ZINARA Board Member">ZINARA Board Member</button>
+            <button class="filter-btn" data-filter="ZINARA Director">ZINARA Director</button>
+            <button class="filter-btn" data-filter="ZINARA Manager">ZINARA Manager</button>
+            
+        </div>
+        
+        <div class="hierarchy-container">
+            <div class="loading" id="loading">Loading organization data...</div>
+            <div class="org-chart" id="orgChart">
+                <!-- Organization chart will be generated here -->
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>@ Noah's Ark</p>
+        </div>
+    </div>
 
-document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
+    <script>
+        // Define the hierarchy structure
+//         const hierarchyStructure = {
+//     'Chief Magistrate':          null,
+//     'Deputy Chief Magistrate':   'Chief Magistrate',
+//     'Regional Magistrate':       'Deputy Chief Magistrate',
+//     'Provincial Magistrate':     'Regional Magistrate',
+//     'Senior Magistrate':         'Provincial Magistrate',
+//     'Resident Magistrate':       'Senior Magistrate',
+//     'Magistrate':                'Resident Magistrate'
+// };
+        
+        const hierarchyStructure = {
+            'Chief Magistrate': null,
+            'Deputy Chief Magistrate': 'Chief Magistrate',
+            'Regional Magistrate': 'Deputy Chief Magistrate',
+            'Provincial Magistrate': 'Regional Magistrate',
+            'Resident Magistrate': 'Provincial Magistrate',
+            'Magistrate': 'Resident Magistrate',
+            'ZACC Chairman': null,
+            'ZACC Commissioner': 'ZACC Vice Chairperson',
+            'ZACC Executive': 'ZACC Commissioner',
+            'ZACC Manager': 'ZACC Executive',
+            'ZINARA Chairperson': 'ZACC Manager',
+            'ZINARA Vice Chairperson': 'ZINARA Chairperson',
+            'ZINARA Board Member': 'ZINARA Vice Chairperson',
+            'ZINARA CEO': 'ZINARA Board Member',
+            'ZINARA Director': 'ZINARA CEO',
+            'ZINARA Manager': 'ZINARA Director'
+        };
 
-        document.querySelectorAll('.filter-btn')
-            .forEach(b => b.classList.remove('active'));
+        // Define the order of positions for display
+        const positionOrder = [
+            'Chief Magistrate',
+            'Deputy Chief Magistrate',
+            'Regional Magistrate',
+            'Provincial Magistrate',
+            'Resident Magistrate',
+            'Magistrate',
+            'ZINARA CEO',
+            'ZACC Chairman',
+            'ZACC Vice Chairperson',
+            'ZACC Commissioner',
+            'ZACC Executive',
+            'ZACC Manager',
+            'ZINARA Chairperson',
+            'ZINARA Vice Chairperson',
+            'ZINARA Board Member',
+            'ZINARA Director',
+            'ZINARA Manager'
+        ];
 
-        this.classList.add('active');
-        filterByPosition(this.dataset.filter);
-    });
-});
+        // Load and parse CSV data
+        async function loadCSVData() {
+            try {
+                // In a real scenario, this would fetch from your data.csv
+                // For demonstration, we're using sample data
+//                 const sampleData = `FirstName,Surname,Position,Area
+// John,Smith,Chief Magistrate,National
+// Jane,Doe,Deputy Chief Magistrate,National
+// Robert,Johnson,Regional Magistrate,Eastern Region
+// Maria,Garcia,Regional Magistrate,Western Region
+// David,Wilson,Provincial Magistrate,East Province
+// Lisa,Anderson,Provincial Magistrate,West Province
+// James,Brown,Senior Magistrate,North District
+// Emily,Taylor,Senior Magistrate,South District
+// Michael,Thomas,Resident Magistrate,City A
+// Sarah,Moore,Resident Magistrate,City B
+// William,Jackson,Magistrate,Town X
+// Elizabeth,White,Magistrate,Town Y`;
 
-const hierarchy = buildHierarchy(data);
-renderOrgChart(hierarchy, document.getElementById('orgChart'));
+//                 // Parse the sample data (replace with your actual CSV loading)
+//                 return parseCSV(sampleData);
+                
+                // In your actual implementation, use this:
+                
+                const response = await fetch('data.csv');
+                if (!response.ok) {
+                    throw new Error('Failed to load data.csv');
+                }
+                const csvText = await response.text();
+                return parseCSV(csvText);
+                
+            } catch (error) {
+                console.error('Error loading CSV:', error);
+                document.getElementById('loading').textContent = 'Error loading data. Please make sure data.csv exists.';
+                return [];
+            }
+        }
 
-</script>
+        // Parse CSV data
+        function parseCSV(csv) {
+            const lines = csv.split('\n');
+            const result = [];
+            
+            // Detect headers
+            const headers = lines[0].split(',').map(header => header.trim());
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                
+                const obj = {};
+                const currentline = lines[i].split(',').map(item => item.trim());
+                
+                for (let j = 0; j < headers.length; j++) {
+                    obj[headers[j]] = currentline[j] || '';
+                }
+                
+                // Create a full name from FirstName and Surname
+                if (obj.FirstName && obj.Surname) {
+                    obj.Name = `${obj.FirstName} ${obj.Surname}`;
+                } else if (obj.FirstName) {
+                    obj.Name = obj.FirstName;
+                } else if (obj.Surname) {
+                    obj.Name = obj.Surname;
+                } else {
+                    obj.Name = 'Unknown';
+                }
+                
+                result.push(obj);
+            }
+            
+            return result;
+        }
 
+        // Build hierarchy tree from flat data
+        function buildHierarchy(data) {
+            const map = {};
+            const roots = [];
+            
+            // First create a map of all nodes
+            data.forEach(item => {
+                // Determine reporting based on position hierarchy
+                const reportsTo = hierarchyStructure[item.Position] || '';
+                map[item.Name] = { 
+                    name: item.Name, 
+                    position: item.Position, 
+                    area: item.Area || 'Not specified',
+                    reportsTo: reportsTo, 
+                    children: [] 
+                };
+            });
+            
+            // Then build the hierarchy
+            data.forEach(item => {
+                const node = map[item.Name];
+                
+                if (node.reportsTo) {
+                    // Find the superior by position
+                    const superior = Object.values(map).find(
+                        n => n.position === node.reportsTo
+                    );
+                    
+                    if (superior) {
+                        superior.children.push(node);
+                    } else {
+                        roots.push(node);
+                    }
+                } else {
+                    roots.push(node);
+                }
+            });
+            
+            // Sort children by position order
+            function sortChildren(node) {
+                if (node.children && node.children.length > 0) {
+                    node.children.sort((a, b) => {
+                        return positionOrder.indexOf(a.position) - positionOrder.indexOf(b.position);
+                    });
+                    
+                    node.children.forEach(child => sortChildren(child));
+                }
+            }
+            
+            roots.forEach(root => sortChildren(root));
+            
+            return roots;
+        }
+
+        // Render organization chart
+        function renderOrgChart(data, container) {
+            container.innerHTML = '';
+            
+            function createLevel(nodes, level = 0) {
+                const levelDiv = document.createElement('div');
+                levelDiv.className = 'level';
+                
+                nodes.forEach(node => {
+                    const nodeDiv = document.createElement('div');
+                    nodeDiv.className = 'node';
+                    nodeDiv.dataset.position = node.position;
+                    
+                    nodeDiv.innerHTML = `
+                        <h3>${node.position}</h3>
+                        <p>${node.name}</p>
+                        <div class="area">${node.area}</div>
+                    `;
+                    
+                    levelDiv.appendChild(nodeDiv);
+                    
+                    if (node.children && node.children.length > 0) {
+                        const connector = document.createElement('div');
+                        connector.className = 'connector';
+                        container.appendChild(connector);
+                        
+                        createLevel(node.children, level + 1);
+                    }
+                });
+                
+                container.appendChild(levelDiv);
+            }
+            
+            createLevel(data);
+        }
+
+        // Filter organization chart by position
+        function filterByPosition(position) {
+            const allData = Array.from(document.querySelectorAll('.node'));
+            
+            if (position === 'all') {
+                allData.forEach(node => {
+                    node.style.display = 'block';
+                });
+                document.querySelectorAll('.level, .connector').forEach(el => {
+                    el.style.display = 'flex';
+                });
+            } else {
+                // Hide all nodes first
+                allData.forEach(node => {
+                    node.style.display = 'none';
+                });
+                document.querySelectorAll('.level, .connector').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                // Show nodes with the selected position
+                const selectedNodes = document.querySelectorAll(`.node[data-position="${position}"]`);
+                selectedNodes.forEach(node => {
+                    node.style.display = 'block';
+                    // Show parent levels
+                    let currentLevel = node.closest('.level');
+                    while (currentLevel) {
+                        currentLevel.style.display = 'flex';
+                        const prevConnector = currentLevel.previousElementSibling;
+                        if (prevConnector && prevConnector.classList.contains('connector')) {
+                            prevConnector.style.display = 'block';
+                        }
+                        currentLevel = currentLevel.previousElementSibling?.previousElementSibling;
+                    }
+                });
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', async function() {
+            const data = await loadCSVData();
+            
+            if (data.length > 0) {
+                document.getElementById('loading').style.display = 'none';
+                const hierarchy = buildHierarchy(data);
+                renderOrgChart(hierarchy, document.getElementById('orgChart'));
+                
+                // Add event listeners to filter buttons
+                document.querySelectorAll('.filter-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        document.querySelectorAll('.filter-btn').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                        filterByPosition(this.dataset.filter);
+                    });
+                });
+            }
+        });
+    </script>
 </body>
 </html>
