@@ -225,14 +225,24 @@
     <script>
         // Define the hierarchy structure
         const hierarchyStructure = {
-            'Chief Magistrate': null,
-            'Deputy Chief Magistrate': 'Chief Magistrate',
-            'Regional Magistrate': 'Deputy Chief Magistrate',
-            'Provincial Magistrate': 'Regional Magistrate',
-            'Senior Magistrate': 'Provincial Magistrate',
-            'Resident Magistrate': 'Senior Magistrate',
-            'Magistrate': 'Resident Magistrate'
-        };
+    'Chief Magistrate':          null,
+    'Deputy Chief Magistrate':   'Chief Magistrate',
+    'Regional Magistrate':       'Deputy Chief Magistrate',
+    'Provincial Magistrate':     'Regional Magistrate',
+    'Senior Magistrate':         'Provincial Magistrate',
+    'Resident Magistrate':       'Senior Magistrate',
+    'Magistrate':                'Resident Magistrate'
+};
+        
+        // const hierarchyStructure = {
+        //     'Chief Magistrate': null,
+        //     'Deputy Chief Magistrate': 'Chief Magistrate',
+        //     'Regional Magistrate': 'Deputy Chief Magistrate',
+        //     'Provincial Magistrate': 'Regional Magistrate',
+        //     'Senior Magistrate': 'Provincial Magistrate',
+        //     'Resident Magistrate': 'Senior Magistrate',
+        //     'Magistrate': 'Resident Magistrate'
+        // };
 
         // Define the order of positions for display
         const positionOrder = [
