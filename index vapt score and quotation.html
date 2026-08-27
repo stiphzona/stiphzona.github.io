@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cybersecurity Risk Score & VAPT Quotation</title>
+
+<style>
+:root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --section: #020617;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --orange: #f97316;
+    --red: #ef4444;
+    --blue: #38bdf8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    font-family: Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 15px;
+}
+
+.container {
+    max-width: 1050px;
+    margin: auto;
+    background: var(--panel);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    justify-content: center;
+}
+
+.logo { height: 40px; }
+
+h1 {
+    font-size: 20px;
+    margin: 5px 0 12px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 18px;
+    margin: 0 0 10px;
+}
+
+h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+}
+
+.tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.tab-btn {
+    margin: 0;
+    background: #334155;
+    color: var(--text);
+    border: 1px solid #475569;
+}
+
+.tab-btn.active {
+    background: var(--green);
+    color: white;
+    border-color: var(--green);
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.scope-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.section {
+    background: var(--section);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(148,163,184,0.08);
+}
+
+label {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+input, select {
+    width: 100%;
+    padding: 7px;
+    margin-top: 3px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: white;
+    color: #0f172a;
+    font-size: 14px;
+}
+
+input[type="checkbox"] {
+    width: auto;
+    margin-right: 5px;
+}
+
+.checkbox {
+    margin-top: 6px;
+    font-size: 13px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    background: var(--green);
+    border: none;
+    color: white;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button.secondary {
+    background: #334155;
+    border: 1px solid #475569;
+}
+
+.button-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 8px;
+}
+
+.results {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--section);
+    border-radius: 8px;
+}
+
+.score {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.small-text {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.note {
+    font-size: 12px;
+    line-height: 1.45;
+    color: #cbd5e1;
+    background: #111827;
+    border-left: 3px solid var(--blue);
+    padding: 8px 10px;
+    margin: 8px 0 0;
+    border-radius: 4px;
+}
+
+.low { color: var(--green); }
+.medium { color: var(--yellow); }
+.high { color: var(--orange); }
+.critical { color: var(--red); }
+
+.money {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--green);
+}
+
+details {
+    background: #0b1220;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    margin-bottom: 12px;
+}
+
+details summary {
+    cursor: pointer;
+    padding: 10px 12px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.details-body { padding: 0 12px 12px; }
+
+.table-wrap { overflow-x: auto; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+th, td {
+    border-bottom: 1px solid #334155;
+    padding: 8px 6px;
+    text-align: left;
+}
+
+th {
+    color: #cbd5e1;
+    font-size: 12px;
+}
+
+.num { text-align: right; }
+
+.total-row td {
+    font-weight: 700;
+    border-top: 1px solid #64748b;
+}
+
+.quote-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.quote-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.quote-card {
+    background: #0b1220;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.quote-card p { margin: 6px 0; }
+
+@media (max-width: 760px) {
+    .grid, .grid-3, .scope-grid, .quote-meta, .quote-summary, .button-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    body {
+        background: white;
+        color: black;
+        padding: 0;
+    }
+
+    .container {
+        max-width: none;
+        box-shadow: none;
+        background: white;
+        color: black;
+        padding: 8mm;
+    }
+
+    .tabs, .no-print, #riskPanel, details { display: none !important; }
+    #quotePanel { display: block !important; }
+
+    .section, .results, .quote-card {
+        background: white;
+        color: black;
+        border: 1px solid #d1d5db;
+        break-inside: avoid;
+    }
+
+    .small-text, .note { color: #475569; }
+    th, td { border-color: #d1d5db; }
+    input, select { border: none; padding: 0; }
+    .money { color: black; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div class="header">
+    <img src="kenac-logo.png" alt="Kenac Logo" class="logo">
+</div>
+
+<h1>Cybersecurity VAPT Calculator</h1>
+
+<div class="tabs no-print">
+    <button id="riskTab" class="tab-btn active" onclick="showTab('risk')">Security Posture</button>
+    <button id="quoteTab" class="tab-btn" onclick="showTab('quote')">VAPT Quotation</button>
+</div>
+
+<!-- ======================== RISK SCORE TAB ======================== -->
+<div id="riskPanel" class="tab-panel active">
+
+<div class="grid">
+    <div class="section">
+        <h3>On-Prem Vulnerabilities</h3>
+        <label>Critical</label>
+        <input id="op_critical" type="number" min="0" value="0">
+        <label>High</label>
+        <input id="op_high" type="number" min="0" value="0">
+        <label>Medium</label>
+        <input id="op_medium" type="number" min="0" value="0">
+        <label>Low</label>
+        <input id="op_low" type="number" min="0" value="0">
+    </div>
+
+    <div class="section">
+        <h3>Cloud Vulnerabilities</h3>
+        <label>Critical</label>
+        <input id="cl_critical" type="number" min="0" value="0">
+        <label>High</label>
+        <input id="cl_high" type="number" min="0" value="0">
+        <label>Medium</label>
+        <input id="cl_medium" type="number" min="0" value="0">
+        <label>Low</label>
+        <input id="cl_low" type="number" min="0" value="0">
+    </div>
+</div>
+
+<div class="section">
+    <h3>Risk Adjustments</h3>
+    <div class="checkbox"><input type="checkbox" id="exploit"> Exploited Vulnerabilities (-25)</div>
+    <div class="checkbox"><input type="checkbox" id="rce"> RCE Present (-20)</div>
+    <div class="checkbox"><input type="checkbox" id="creds"> Weak Credentials (-15)</div>
+    <div class="checkbox"><input type="checkbox" id="unsupported"> Unsupported Systems (-10)</div>
+    <div class="checkbox"><input type="checkbox" id="protocols"> Insecure Protocols (-10)</div>
+</div>
+
+<button onclick="calculateRisk()">Calculate Score</button>
+
+<div class="results">
+    <h3>Results</h3>
+    <p>Base Score: <span id="baseScore">0</span></p>
+    <p class="small-text">Represents the automated risk score based purely on vulnerability counts and severity weighting.</p>
+
+    <p>Adjusted Score: <span id="adjustedScore">0</span></p>
+    <p class="small-text">Reflects real-world risk after factoring in exploitability, critical weaknesses, and validated findings.</p>
+
+    <p>Risk Rating: <span id="rating">-</span></p>
+    <p class="small-text">Overall security posture classification based on the adjusted score.</p>
+</div>
+
+</div>
+
+<!-- ======================== QUOTATION TAB ======================== -->
+<div id="quotePanel" class="tab-panel">
+
+<div class="section">
+    <h2>VAPT Quotation</h2>
+    <div class="quote-meta">
+        <div>
+            <label>Client Name</label>
+            <input id="clientName" type="text" placeholder="Client / Organisation">
+        </div>
+        <div>
+            <label>Quotation Reference</label>
+            <input id="quoteRef" type="text">
+        </div>
+        <div>
+            <label>Assessment Type</label>
+            <select id="assessmentType" onchange="calculateQuote()">
+                <option value="1.00">Black Box</option>
+                <option value="1.15" selected>Grey Box</option>
+                <option value="1.30">White Box</option>
+            </select>
+        </div>
+    </div>
+    <p class="small-text">Assessment type applies an effort multiplier to the scoped technical work. The multiplier can be changed in the pricing configuration.</p>
+</div>
+
+<div class="section">
+    <h3>Client Scope</h3>
+    <div class="scope-grid">
+        <div><label>Public IPs</label><input class="scope-input" id="publicIPs" type="number" min="0" value="0"></div>
+        <div><label>Websites</label><input class="scope-input" id="websites" type="number" min="0" value="0"></div>
+        <div><label>Web Applications</label><input class="scope-input" id="webApps" type="number" min="0" value="0"></div>
+        <div><label>APIs</label><input class="scope-input" id="apis" type="number" min="0" value="0"></div>
+        <div><label>Databases</label><input class="scope-input" id="databases" type="number" min="0" value="0"></div>
+        <div><label>Network Appliances</label><input class="scope-input" id="networkAppliances" type="number" min="0" value="0"></div>
+        <div><label>Servers</label><input class="scope-input" id="servers" type="number" min="0" value="0"></div>
+        <div><label>Cloud Environments / Tenants</label><input class="scope-input" id="cloud" type="number" min="0" value="0"></div>
+        <div><label>Phishing Users</label><input class="scope-input" id="phishingUsers" type="number" min="0" value="0"></div>
+    </div>
+    <p class="small-text">Network appliances can include firewalls, routers, switches, VPN gateways and similar infrastructure devices.</p>
+</div>
+
+<details class="no-print">
+    <summary>Pricing Configuration (editable)</summary>
+    <div class="details-body">
+        <p class="note">The values below are sample internal rates in USD. Replace them with your approved Kenac rate card before using the calculator for formal quotations.</p>
+        <div class="scope-grid">
+            <div><label>Base Engagement Fee (USD)</label><input class="rate-input" id="baseFee" type="number" min="0" value="500"></div>
+            <div><label>Public IP / IP</label><input class="rate-input" id="ratePublicIP" type="number" min="0" value="45"></div>
+            <div><label>Website / Site</label><input class="rate-input" id="rateWebsite" type="number" min="0" value="150"></div>
+            <div><label>Web Application / App</label><input class="rate-input" id="rateWebApp" type="number" min="0" value="350"></div>
+            <div><label>API / API Set</label><input class="rate-input" id="rateAPI" type="number" min="0" value="300"></div>
+            <div><label>Database / Instance</label><input class="rate-input" id="rateDatabase" type="number" min="0" value="200"></div>
+            <div><label>Network Appliance / Device</label><input class="rate-input" id="rateNetwork" type="number" min="0" value="75"></div>
+            <div><label>Server / Server</label><input class="rate-input" id="rateServer" type="number" min="0" value="100"></div>
+            <div><label>Cloud Environment / Tenant</label><input class="rate-input" id="rateCloud" type="number" min="0" value="400"></div>
+            <div><label>Phishing / User</label><input class="rate-input" id="ratePhishing" type="number" min="0" step="0.01" value="3"></div>
+            <div><label>Black Box Multiplier</label><input id="blackMultiplier" type="number" min="0" step="0.05" value="1.00"></div>
+            <div><label>Grey Box Multiplier</label><input id="greyMultiplier" type="number" min="0" step="0.05" value="1.15"></div>
+            <div><label>White Box Multiplier</label><input id="whiteMultiplier" type="number" min="0" step="0.05" value="1.30"></div>
+            <div><label>Discount (%)</label><input id="discountPct" type="number" min="0" max="100" step="0.1" value="0"></div>
+            <div><label>Tax / VAT (%)</label><input id="taxPct" type="number" min="0" max="100" step="0.1" value="0"></div>
+        </div>
+    </div>
+</details>
+
+<div class="button-row no-print">
+    <button onclick="calculateQuote()">Calculate Quotation</button>
+    <button class="secondary" onclick="window.print()">Print / Save PDF</button>
+</div>
+
+<div class="results" id="quotationResult">
+    <div class="quote-summary">
+        <div class="quote-card">
+            <h3>Quotation Summary</h3>
+            <p><strong>Client:</strong> <span id="outClient">-</span></p>
+            <p><strong>Reference:</strong> <span id="outRef">-</span></p>
+            <p><strong>Assessment:</strong> <span id="outAssessment">Grey Box</span></p>
+            <p><strong>Total:</strong></p>
+            <div class="money">USD <span id="grandTotal">0.00</span></div>
+            <p class="small-text">Indicative VAPT professional-services fee based on the entered scope and configured rate card.</p>
+        </div>
+
+        <div class="quote-card">
+            <h3>Commercial Calculation</h3>
+            <p>Base Engagement: <span style="float:right">USD <span id="outBaseFee">0.00</span></span></p>
+            <p>Scope Subtotal: <span style="float:right">USD <span id="scopeSubtotal">0.00</span></span></p>
+            <p>Assessment Adjustment: <span style="float:right">USD <span id="assessmentAdjustment">0.00</span></span></p>
+            <p>Discount: <span style="float:right">- USD <span id="discountAmount">0.00</span></span></p>
+            <p>Tax / VAT: <span style="float:right">USD <span id="taxAmount">0.00</span></span></p>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Scope Item</th>
+                    <th class="num">Qty</th>
+                    <th class="num">Unit Rate (USD)</th>
+                    <th class="num">Amount (USD)</th>
+                </tr>
+            </thead>
+            <tbody id="quoteLines"></tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="3">Final Quotation</td>
+                    <td class="num">USD <span id="tableGrandTotal">0.00</span></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <p class="note">Quotation should be validated against complexity, exclusions, testing windows, travel/on-site requirements, third-party dependencies and any special compliance requirements before being issued to the client.</p>
+</div>
+
+</div>
+</div>
+
+<script>
+function getNum(id) {
+    return parseFloat(document.getElementById(id).value) || 0;
+}
+
+function money(value) {
+    return Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+
+function showTab(tab) {
+    document.getElementById('riskPanel').classList.toggle('active', tab === 'risk');
+    document.getElementById('quotePanel').classList.toggle('active', tab === 'quote');
+    document.getElementById('riskTab').classList.toggle('active', tab === 'risk');
+    document.getElementById('quoteTab').classList.toggle('active', tab === 'quote');
+}
+
+function calculateRisk() {
+    let op = (getNum('op_critical')*10) + (getNum('op_high')*7) + (getNum('op_medium')*4) + (getNum('op_low')*1);
+    let cl = (getNum('cl_critical')*10) + (getNum('cl_high')*7) + (getNum('cl_medium')*4) + (getNum('cl_low')*1);
+
+    let totalRisk = op + cl;
+    let maxRisk = 2000;
+    let baseScore = 100 - (totalRisk / maxRisk * 100);
+    if (baseScore < 0) baseScore = 0;
+
+    let penalty = 0;
+    if(document.getElementById('exploit').checked) penalty += 25;
+    if(document.getElementById('rce').checked) penalty += 20;
+    if(document.getElementById('creds').checked) penalty += 15;
+    if(document.getElementById('unsupported').checked) penalty += 10;
+    if(document.getElementById('protocols').checked) penalty += 10;
+
+    let adjustedScore = Math.max(0, baseScore - penalty);
+
+    function getRating(score){
+        if(score >= 80) return {text:"Low Risk", class:"low"};
+        if(score >= 60) return {text:"Medium Risk", class:"medium"};
+        if(score >= 40) return {text:"High Risk", class:"high"};
+        return {text:"Critical", class:"critical"};
+    }
+
+    document.getElementById('baseScore').innerText = baseScore.toFixed(2);
+    document.getElementById('adjustedScore').innerText = adjustedScore.toFixed(2);
+    let ratingObj = getRating(adjustedScore);
+
+    let ratingEl = document.getElementById('rating');
+    ratingEl.innerText = ratingObj.text;
+    ratingEl.className = ratingObj.class;
+
+    document.getElementById('adjustedScore').className = ratingObj.class;
+}
+
+function syncAssessmentMultiplier() {
+    const select = document.getElementById('assessmentType');
+    const label = select.options[select.selectedIndex].text;
+    let multiplier = 1;
+
+    if (label === 'Black Box') multiplier = getNum('blackMultiplier');
+    if (label === 'Grey Box') multiplier = getNum('greyMultiplier');
+    if (label === 'White Box') multiplier = getNum('whiteMultiplier');
+
+    return { label, multiplier };
+}
+
+function calculateQuote() {
+    const assessment = syncAssessmentMultiplier();
+
+    const items = [
+        { label: 'Public IPs', qtyId: 'publicIPs', rateId: 'ratePublicIP' },
+        { label: 'Websites', qtyId: 'websites', rateId: 'rateWebsite' },
+        { label: 'Web Applications', qtyId: 'webApps', rateId: 'rateWebApp' },
+        { label: 'APIs', qtyId: 'apis', rateId: 'rateAPI' },
+        { label: 'Databases', qtyId: 'databases', rateId: 'rateDatabase' },
+        { label: 'Network Appliances', qtyId: 'networkAppliances', rateId: 'rateNetwork' },
+        { label: 'Servers', qtyId: 'servers', rateId: 'rateServer' },
+        { label: 'Cloud Environments / Tenants', qtyId: 'cloud', rateId: 'rateCloud' },
+        { label: 'Phishing Users', qtyId: 'phishingUsers', rateId: 'ratePhishing' }
+    ];
+
+    let scopeSubtotal = 0;
+    let lineHtml = '';
+
+    items.forEach(item => {
+        const qty = Math.max(0, getNum(item.qtyId));
+        const rate = Math.max(0, getNum(item.rateId));
+        const amount = qty * rate;
+        scopeSubtotal += amount;
+
+        if (qty > 0) {
+            lineHtml += `
+                <tr>
+                    <td>${item.label}</td>
+                    <td class="num">${qty}</td>
+                    <td class="num">${money(rate)}</td>
+                    <td class="num">${money(amount)}</td>
+                </tr>`;
+        }
+    });
+
+    if (!lineHtml) {
+        lineHtml = '<tr><td colspan="4" class="small-text">No scoped assets entered yet.</td></tr>';
+    }
+
+    const baseFee = Math.max(0, getNum('baseFee'));
+    const preMultiplier = baseFee + scopeSubtotal;
+    const multipliedSubtotal = preMultiplier * assessment.multiplier;
+    const assessmentAdjustment = multipliedSubtotal - preMultiplier;
+
+    const discountPct = Math.min(100, Math.max(0, getNum('discountPct')));
+    const discountAmount = multipliedSubtotal * (discountPct / 100);
+    const afterDiscount = multipliedSubtotal - discountAmount;
+
+    const taxPct = Math.max(0, getNum('taxPct'));
+    const taxAmount = afterDiscount * (taxPct / 100);
+    const grandTotal = afterDiscount + taxAmount;
+
+    document.getElementById('quoteLines').innerHTML = lineHtml;
+    document.getElementById('scopeSubtotal').innerText = money(scopeSubtotal);
+    document.getElementById('outBaseFee').innerText = money(baseFee);
+    document.getElementById('assessmentAdjustment').innerText = money(assessmentAdjustment);
+    document.getElementById('discountAmount').innerText = money(discountAmount);
+    document.getElementById('taxAmount').innerText = money(taxAmount);
+    document.getElementById('grandTotal').innerText = money(grandTotal);
+    document.getElementById('tableGrandTotal').innerText = money(grandTotal);
+
+    document.getElementById('outClient').innerText = document.getElementById('clientName').value.trim() || '-';
+    document.getElementById('outRef').innerText = document.getElementById('quoteRef').value.trim() || '-';
+    document.getElementById('outAssessment').innerText = `${assessment.label} (x${assessment.multiplier.toFixed(2)})`;
+}
+
+function initQuoteRef() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    document.getElementById('quoteRef').value = `VAPT-${yyyy}${mm}${dd}`;
+}
+
+// Recalculate when scope/rates/commercial fields change.
+document.addEventListener('input', function(e) {
+    if (e.target.closest('#quotePanel')) calculateQuote();
+});
+
+document.addEventListener('change', function(e) {
+    if (e.target.closest('#quotePanel')) calculateQuote();
+});
+
+initQuoteRef();
+calculateQuote();
+</script>
+
+</body>
+</html>
